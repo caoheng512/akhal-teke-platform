@@ -1,0 +1,4651 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Akhal-Teke · 汗血马数字确权与交易平台</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Noto+Serif+SC:wght@300;400;500&family=Playfair+Display:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --gold: #C9A96E;
+            --gold-light: #D4B896;
+            --gold-dark: #8B6914;
+            --black: #0A0A0A;
+            --black-soft: #111111;
+            --black-card: #151515;
+            --black-border: #1E1E1E;
+            --white: #FAFAFA;
+            --gray: #888888;
+            --gray-light: #AAAAAA;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* 自定义滚动条 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--black);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, var(--gold) 0%, var(--gold-dark) 100%);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--gold-light);
+        }
+
+        /* 滚动进度条 */
+        .scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--gold-dark), var(--gold), var(--gold-light));
+            z-index: 9999;
+            transition: width 0.1s;
+        }
+
+        body {
+            background-color: var(--black);
+            color: var(--white);
+            font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            /* 细微噪点纹理 */
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+        }
+
+        /* 页面加载淡入 */
+        .page-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--black);
+            z-index: 99999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+        }
+
+        .page-loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .page-loader-logo {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 36px;
+            color: var(--gold);
+            letter-spacing: 12px;
+            animation: loaderPulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes loaderPulse {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 1; }
+        }
+
+        /* 导航 */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 24px 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(to bottom, rgba(10,10,10,0.95) 0%, transparent 100%);
+            transition: background 0.4s ease;
+        }
+
+        nav.scrolled {
+            background: rgba(10,10,10,0.98);
+            backdrop-filter: blur(20px);
+        }
+
+        .logo {
+            position: absolute;
+            left: 60px;
+            font-family: 'Playfair Display', serif;
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: 6px;
+            color: var(--gold);
+            text-transform: uppercase;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 48px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--gray-light);
+            text-decoration: none;
+            font-size: 13px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: 400;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 50%;
+            width: 0;
+            height: 1px;
+            background: var(--gold);
+            transition: all 0.4s ease;
+            transform: translateX(-50%);
+        }
+
+        .nav-links a:hover {
+            color: var(--gold);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Hero 区域 */
+        .hero {
+            height: 100vh;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .hero-video-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 0.5;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                135deg,
+                rgba(10,10,10,0.85) 0%,
+                rgba(10,10,10,0.3) 50%,
+                rgba(10,10,10,0.85) 100%
+            );
+        }
+
+        /* 金色粒子效果 */
+        .hero-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--gold);
+            border-radius: 50%;
+            opacity: 0;
+            animation: particleFloat 8s ease-in-out infinite;
+        }
+
+        @keyframes particleFloat {
+            0% {
+                opacity: 0;
+                transform: translateY(100vh) scale(0);
+            }
+            10% {
+                opacity: 0.6;
+            }
+            90% {
+                opacity: 0.3;
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-100px) scale(1);
+            }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            max-width: 900px;
+            padding: 0 40px;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            border: 1px solid var(--gold);
+            padding: 6px 20px;
+            font-size: 11px;
+            letter-spacing: 4px;
+            color: var(--gold);
+            text-transform: uppercase;
+            margin-bottom: 40px;
+        }
+
+        .hero h1 {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 72px;
+            font-weight: 500;
+            line-height: 1.1;
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 50%, var(--gold-dark) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: 18px;
+            color: var(--gray-light);
+            letter-spacing: 8px;
+            margin-bottom: 60px;
+            font-weight: 300;
+        }
+
+        .hero-desc {
+            font-size: 16px;
+            color: var(--gray);
+            line-height: 2;
+            max-width: 600px;
+            margin: 0 auto 50px;
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: var(--gold);
+            color: var(--black);
+            padding: 16px 48px;
+            font-size: 13px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            background: var(--gold-light);
+            transform: translateY(-2px);
+        }
+
+        .btn-hero {
+            background: linear-gradient(135deg, var(--gold) 0%, #E8D5A3 50%, var(--gold) 100%);
+            background-size: 200% 200%;
+            color: var(--black);
+            padding: 20px 64px;
+            font-size: 16px;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.4s ease;
+            border: none;
+            cursor: pointer;
+            animation: shimmer 3s ease-in-out infinite;
+            box-shadow: 0 4px 30px rgba(201,169,110,0.4);
+        }
+
+        .btn-hero:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 40px rgba(201,169,110,0.6);
+        }
+
+        @keyframes shimmer {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .btn-outline {
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            padding: 16px 48px;
+            font-size: 13px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            text-decoration: none;
+            font-weight: 400;
+            transition: all 0.3s ease;
+            background: transparent;
+            cursor: pointer;
+        }
+
+        .btn-outline:hover {
+            background: var(--gold);
+            color: var(--black);
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            color: var(--gray);
+            font-size: 11px;
+            letter-spacing: 2px;
+        }
+
+        .scroll-line {
+            width: 1px;
+            height: 60px;
+            background: linear-gradient(to bottom, var(--gold), transparent);
+            animation: scrollPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes scrollPulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+
+        /* 数据统计 */
+        .stats {
+            padding: 120px 80px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 0 40px;
+            border-right: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .stat-item:last-child {
+            border-right: none;
+        }
+
+        .stat-number {
+            font-family: 'Helvetica Neue', 'Arial', sans-serif;
+            font-size: 64px;
+            color: var(--gold);
+            font-weight: 700;
+            margin-bottom: 12px;
+            letter-spacing: -2px;
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--gray);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+        }
+
+        /* 精选马匹 */
+        .featured {
+            padding: 80px 80px 120px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-tag {
+            font-size: 11px;
+            letter-spacing: 6px;
+            color: var(--gold);
+            text-transform: uppercase;
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 48px;
+            font-weight: 400;
+            margin-bottom: 16px;
+            letter-spacing: 4px;
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 80px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            margin: 24px auto 0;
+        }
+
+        .section-desc {
+            font-size: 14px;
+            color: var(--gray);
+            max-width: 500px;
+            margin: 0 auto;
+            line-height: 1.8;
+            letter-spacing: 1px;
+        }
+
+        .horses-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .horse-card {
+            background: none;
+            overflow: visible;
+            transition: all 0.4s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .horse-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .horse-card-media {
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+        }
+
+        /* 旋转金色边框 */
+        .horse-card-media::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 12px;
+            padding: 2px;
+            background: linear-gradient(0deg, transparent 30%, var(--gold) 50%, transparent 70%);
+            background-size: 100% 100%;
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            animation: none;
+        }
+
+        .horse-card:hover .horse-card-media::before {
+            opacity: 1;
+            animation: borderRotate 3s linear infinite;
+        }
+
+        @keyframes borderRotate {
+            0% { background: linear-gradient(0deg, transparent 30%, var(--gold) 50%, transparent 70%); }
+            25% { background: linear-gradient(90deg, transparent 30%, var(--gold) 50%, transparent 70%); }
+            50% { background: linear-gradient(180deg, transparent 30%, var(--gold) 50%, transparent 70%); }
+            75% { background: linear-gradient(270deg, transparent 30%, var(--gold) 50%, transparent 70%); }
+            100% { background: linear-gradient(360deg, transparent 30%, var(--gold) 50%, transparent 70%); }
+        }
+
+        .horse-card-media video {
+            width: 100%;
+            aspect-ratio: 4/3;
+            object-fit: cover;
+            display: block;
+            filter: brightness(0.9);
+            transition: all 0.4s ease;
+            cursor: pointer;
+            border-radius: 12px;
+        }
+
+        .horse-card:hover .horse-card-media video {
+            filter: brightness(1);
+            transform: scale(1.02);
+        }
+
+        /* 播放按钮覆盖层 */
+        .play-btn-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 64px;
+            height: 64px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: all 0.4s ease;
+            z-index: 5;
+            cursor: pointer;
+        }
+
+        .play-btn-icon {
+            font-size: 20px;
+            color: var(--white);
+            margin-left: 4px;
+            transition: transform 0.3s ease;
+        }
+
+        .horse-card:hover .play-btn-overlay {
+            opacity: 1;
+        }
+
+        .play-btn-overlay:hover {
+            background: rgba(201, 169, 110, 0.8);
+            border-color: var(--gold);
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+
+        .play-btn-overlay:hover .play-btn-icon {
+            color: var(--black);
+        }
+
+        .horse-card-media::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 55%;
+            background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 100%);
+            pointer-events: none;
+        }
+
+        .horse-card-title-overlay {
+            position: absolute;
+            bottom: 14px;
+            left: 16px;
+            z-index: 2;
+        }
+
+        .horse-card-title-overlay .horse-card-name {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 20px;
+            font-weight: 500;
+            color: var(--white);
+            margin-bottom: 4px;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.9);
+        }
+
+        .horse-card-title-overlay .horse-card-breed {
+            font-size: 11px;
+            color: var(--gold-light);
+            letter-spacing: 2px;
+        }
+
+        .horse-card-status {
+            position: absolute;
+            top: 14px;
+            left: 14px;
+            z-index: 3;
+            font-size: 10px;
+            letter-spacing: 2px;
+            padding: 4px 12px;
+            font-weight: 600;
+        }
+
+        /* 隐藏浏览器视频控制条 */
+        video::-webkit-media-controls { display: none !important; }
+        video::-webkit-media-controls-enclosure { display: none !important; }
+        video::-webkit-media-controls-panel { display: none !important; }
+        video::-webkit-media-controls-overlay-enclosure { display: none !important; }
+        video::-moz-media-controls { display: none !important; }
+
+        .horse-card-info {
+            padding: 18px 0 0;
+        }
+
+        .horse-card-chip {
+            font-size: 11px;
+            color: var(--gray);
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            font-family: 'Helvetica Neue', 'Arial', sans-serif;
+        }
+
+        .horse-card-meta-row {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+        }
+
+        .meta-tag {
+            font-size: 11px;
+            color: var(--gray-light);
+            border: 1px solid rgba(255,255,255,0.08);
+            padding: 3px 8px;
+            letter-spacing: 1px;
+            font-family: 'Helvetica Neue', 'Arial', sans-serif;
+        }
+
+        .horse-card-status-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .status-badge {
+            font-size: 11px;
+            letter-spacing: 1px;
+            padding: 3px 10px;
+            font-weight: 600;
+        }
+
+        .status-sale-badge {
+            background: var(--gold);
+            color: var(--black);
+        }
+
+        .status-breeding-badge {
+            background: rgba(42,90,42,0.8);
+            color: #7cb87c;
+            border: 1px solid rgba(61,122,61,0.5);
+        }
+
+        .status-owned-badge {
+            background: rgba(26,26,46,0.8);
+            color: var(--gray-light);
+            border: 1px solid rgba(51,51,51,0.5);
+        }
+
+        .location-tag {
+            font-size: 12px;
+            color: var(--gray);
+            letter-spacing: 1px;
+            flex: 1;
+        }
+
+        .owner-tag {
+            font-size: 12px;
+            letter-spacing: 1px;
+            padding: 3px 8px;
+        }
+
+        .owner-none {
+            color: #555;
+            border: 1px solid #333;
+        }
+
+        .owner-has {
+            color: var(--gold-light);
+            border: 1px solid rgba(201,169,110,0.3);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .owner-has:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        .horse-card-bottom {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .horse-card-price {
+            margin: 0;
+        }
+
+        .horse-card-price span {
+            font-size: 12px;
+            color: var(--gray);
+        }
+
+        .horse-card-price strong {
+            font-family: 'Helvetica Neue', 'Arial', sans-serif;
+            font-size: 22px;
+            color: var(--gold);
+            font-weight: 700;
+        }
+
+        .btn-detail {
+            background: transparent;
+            border: 1px solid rgba(201,169,110,0.4);
+            color: var(--gold);
+            padding: 8px 16px;
+            font-size: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+
+        .btn-detail:hover {
+            border-color: var(--gold);
+            background: rgba(201,169,110,0.08);
+        }
+
+        .btn-inquire {
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+            border: none;
+            color: var(--black);
+            padding: 14px 28px;
+            font-size: 12px;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            font-weight: 500;
+            box-shadow: 0 4px 20px rgba(201,169,110,0.3);
+        }
+
+        .btn-inquire:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 30px rgba(201,169,110,0.5);
+        }
+
+        .horse-card-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        /* 数字档案 */
+
+        /* 骑师展示 */
+        .jockeys {
+            padding: 120px 60px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .jockeys-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+        }
+
+        .jockey-card {
+            background: var(--black-card);
+            border: 1px solid var(--black-border);
+            overflow: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .jockey-card:hover {
+            border-color: var(--gold);
+            transform: translateY(-6px);
+        }
+
+        .jockey-img-wrapper {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .jockey-img {
+            width: 100%;
+            aspect-ratio: 3/4;
+            object-fit: cover;
+            display: block;
+            filter: brightness(0.9);
+            transition: all 0.4s ease;
+            border-radius: 12px;
+        }
+
+        .jockey-card:hover .jockey-img {
+            filter: brightness(1.05);
+            transform: scale(1.03);
+        }
+
+        .jockey-info {
+            padding: 20px;
+        }
+
+        .jockey-name {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 20px;
+            font-weight: 500;
+            color: var(--white);
+            margin-bottom: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .jockey-price {
+            font-size: 11px;
+            color: var(--gold-light);
+            letter-spacing: 1px;
+            font-family: 'Helvetica Neue', 'Arial', sans-serif;
+            text-align: right;
+        }
+
+        .jockey-price span {
+            display: block;
+            font-size: 10px;
+            color: var(--gray);
+            letter-spacing: 0;
+        }
+
+        .jockey-club {
+            font-size: 11px;
+            color: var(--gold);
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .jockey-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            padding: 14px 0;
+            border-top: 1px solid var(--black-border);
+            border-bottom: 1px solid var(--black-border);
+            margin-bottom: 16px;
+        }
+
+        .jockey-stat {
+            text-align: center;
+        }
+
+        .jockey-stat-val {
+            font-family: 'Helvetica Neue', 'Arial', sans-serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 2px;
+        }
+
+        .jockey-stat-lbl {
+            font-size: 10px;
+            color: var(--gray);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .jockey-details {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 14px;
+        }
+
+        .jockey-detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .jockey-detail-lbl {
+            font-size: 11px;
+            color: var(--gray);
+            letter-spacing: 1px;
+        }
+
+        .jockey-detail-val {
+            font-family: 'Helvetica Neue', 'Arial', sans-serif;
+            font-size: 12px;
+            color: var(--white);
+        }
+
+        .jockey-bio {
+            font-size: 12px;
+            color: var(--gray);
+            line-height: 1.7;
+            border-top: 1px solid var(--black-border);
+            padding-top: 12px;
+        }
+
+        .bloodline {
+            padding: 120px 60px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .bloodline-chart {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin-top: 60px;
+            flex-wrap: wrap;
+        }
+
+        .bloodline-node {
+            text-align: center;
+            padding: 20px;
+            border: 1px solid var(--black-border);
+            background: var(--black-card);
+            min-width: 140px;
+            transition: all 0.3s ease;
+        }
+
+        .bloodline-node:hover {
+            border-color: var(--gold);
+        }
+
+        .bloodline-node.highlight {
+            border-color: var(--gold);
+            background: linear-gradient(135deg, rgba(201,169,110,0.1) 0%, transparent 100%);
+        }
+
+        .bloodline-node-name {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 16px;
+            color: var(--white);
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+
+        .bloodline-node-title {
+            font-size: 11px;
+            color: var(--gold);
+            letter-spacing: 1px;
+        }
+
+        .bloodline-arrow {
+            color: var(--gold);
+            font-size: 24px;
+        }
+
+        /* 页脚 */
+        footer {
+            padding: 60px;
+            border-top: 1px solid var(--black-border);
+            text-align: center;
+        }
+
+        /* 信任背书 */
+        .trust-section {
+            background: linear-gradient(to bottom, var(--black-card) 0%, var(--black) 100%);
+            padding: 100px 60px;
+            border-top: 1px solid var(--black-border);
+            border-bottom: 1px solid var(--black-border);
+        }
+
+        .trust-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .trust-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 40px;
+            margin-top: 60px;
+        }
+
+        .trust-item {
+            text-align: center;
+            padding: 40px 30px;
+            background: var(--black);
+            border: 1px solid var(--black-border);
+            transition: all 0.4s;
+        }
+
+        .trust-item:hover {
+            border-color: var(--gold);
+            transform: translateY(-4px);
+        }
+
+        .trust-icon {
+            font-size: 40px;
+            margin-bottom: 20px;
+        }
+
+        .trust-title {
+            font-size: 16px;
+            color: var(--gold);
+            letter-spacing: 3px;
+            margin-bottom: 12px;
+        }
+
+        .trust-desc {
+            font-size: 13px;
+            color: var(--gray);
+            line-height: 1.8;
+        }
+
+        /* 联系我们 */
+        .contact-section {
+            padding: 100px 60px;
+            background: var(--black);
+        }
+
+        .contact-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 40px;
+            margin-top: 60px;
+        }
+
+        .contact-item {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .contact-icon {
+            font-size: 32px;
+            margin-bottom: 16px;
+        }
+
+        .contact-label {
+            font-size: 11px;
+            color: var(--gray);
+            letter-spacing: 3px;
+            margin-bottom: 12px;
+        }
+
+        .contact-value {
+            font-size: 16px;
+            color: var(--white);
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+        }
+
+        .contact-note {
+            font-size: 11px;
+            color: var(--gray-light);
+        }
+
+        /* 回到顶部按钮 */
+        .back-to-top {
+            position: fixed;
+            bottom: 40px;
+            right: 40px;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+            border: none;
+            color: var(--black);
+            font-size: 20px;
+            cursor: pointer;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.4s ease;
+            z-index: 900;
+            box-shadow: 0 4px 20px rgba(201,169,110,0.3);
+        }
+
+        .back-to-top:hover {
+            transform: translateY(-4px) scale(1.1);
+            box-shadow: 0 8px 30px rgba(201,169,110,0.5);
+        }
+
+        /* 购马流程 */
+        .process-section {
+            padding: 100px 60px;
+            background: var(--black);
+            border-top: 1px solid var(--black-border);
+            border-bottom: 1px solid var(--black-border);
+        }
+
+        .process-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .process-steps {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 60px;
+            flex-wrap: wrap;
+        }
+
+        .process-step {
+            text-align: center;
+            padding: 40px 30px;
+            background: var(--black-card);
+            border: 1px solid var(--black-border);
+            width: 220px;
+            transition: all 0.4s;
+        }
+
+        .process-step:hover {
+            border-color: var(--gold);
+            transform: translateY(-4px);
+        }
+
+        .process-num {
+            font-size: 12px;
+            color: var(--gold);
+            letter-spacing: 3px;
+            margin-bottom: 16px;
+        }
+
+        .process-icon {
+            font-size: 40px;
+            margin-bottom: 16px;
+        }
+
+        .process-title {
+            font-size: 16px;
+            color: var(--white);
+            letter-spacing: 3px;
+            margin-bottom: 12px;
+        }
+
+        .process-desc {
+            font-size: 12px;
+            color: var(--gray);
+            line-height: 1.8;
+        }
+
+        .process-arrow {
+            font-size: 24px;
+            color: var(--gold);
+        }
+
+        /* 常见问题 */
+        .faq-section {
+            padding: 100px 60px;
+            background: linear-gradient(to bottom, var(--black) 0%, var(--black-card) 100%);
+        }
+
+        .faq-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .faq-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            margin-top: 60px;
+        }
+
+        .faq-item {
+            padding: 32px;
+            background: var(--black);
+            border: 1px solid var(--black-border);
+            transition: all 0.3s;
+        }
+
+        .faq-item:hover {
+            border-color: rgba(201,169,110,0.3);
+        }
+
+        .faq-q {
+            font-size: 15px;
+            color: var(--gold);
+            margin-bottom: 16px;
+            letter-spacing: 1px;
+        }
+
+        .faq-a {
+            font-size: 13px;
+            color: var(--gray);
+            line-height: 1.9;
+        }
+
+        .footer-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 20px;
+            color: var(--gold);
+            letter-spacing: 6px;
+            margin-bottom: 20px;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-bottom: 30px;
+        }
+
+        .footer-links a {
+            color: var(--gray);
+            text-decoration: none;
+            font-size: 12px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--gold);
+        }
+
+        .footer-copy {
+            font-size: 12px;
+            color: var(--gray);
+            letter-spacing: 1px;
+        }
+
+        /* 响应式 */
+        @media (max-width: 1200px) {
+            .horses-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 900px) {
+            nav {
+                padding: 20px 30px;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 48px;
+            }
+
+            .hero-subtitle {
+                font-size: 14px;
+                letter-spacing: 4px;
+            }
+
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+                padding: 60px 30px;
+            }
+
+            .featured {
+                padding: 80px 30px;
+            }
+
+            .archive-content {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .archive-img-accent {
+                display: none;
+            }
+
+            .horses-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .invite-form {
+                flex-direction: column;
+            }
+
+            .bloodline-chart {
+                flex-direction: column;
+            }
+
+            .bloodline-arrow {
+                transform: rotate(90deg);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .hero h1 {
+                font-size: 36px;
+            }
+
+            .section-title {
+                font-size: 32px;
+            }
+
+            .archive-text h2 {
+                font-size: 32px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr 1fr;
+                gap: 20px;
+            }
+
+            .stat-number {
+                font-size: 36px;
+            }
+
+            .modal-container {
+                padding: 0 16px 60px;
+                margin: 20px auto;
+            }
+
+            .modal-title {
+                font-size: 32px;
+            }
+
+            .modal-tabs {
+                gap: 0;
+            }
+
+            .modal-tab {
+                padding: 12px 16px;
+                font-size: 11px;
+            }
+
+            .photo-gallery {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .photo-thumb-main {
+                grid-column: span 1;
+                grid-row: span 1;
+            }
+
+            .video-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .health-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-owner-info {
+                gap: 16px;
+            }
+
+            .modal-info-item {
+                flex-direction: column;
+                gap: 4px;
+                align-items: flex-start;
+            }
+
+            .download-btns {
+                flex-direction: column;
+            }
+
+            .bloodline-cert {
+                padding: 20px;
+            }
+
+            .bloodline-gen {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        /* 滚动动画 */
+        .fade-in {
+            opacity: 1;
+            transform: translateY(0);
+            transition: all 0.8s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* 邀请密钥验证页 / 会员中心 */
+        .invite-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #0a0a0a;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .invite-overlay.hidden {
+            display: none;
+        }
+
+        .invite-box {
+            text-align: center;
+            max-width: 520px;
+            width: 100%;
+            padding: 40px;
+            display: block;
+            box-sizing: border-box;
+        }
+
+        .invite-logo {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--gold);
+            letter-spacing: 8px;
+            margin-bottom: 12px;
+        }
+
+        .invite-sub {
+            font-size: 11px;
+            color: var(--gray);
+            letter-spacing: 4px;
+            margin-bottom: 48px;
+        }
+
+        .invite-input {
+            width: 100%;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(201,169,110,0.3);
+            color: var(--gold);
+            font-size: 16px;
+            letter-spacing: 6px;
+            text-align: center;
+            padding: 16px;
+            outline: none;
+            font-family: 'Helvetica Neue', 'Arial', sans-serif;
+            transition: all 0.3s;
+            box-sizing: border-box;
+        }
+
+        .invite-input:focus {
+            border-color: var(--gold);
+            background: rgba(201,169,110,0.06);
+        }
+
+        .invite-input::placeholder {
+            color: rgba(201,169,110,0.3);
+            letter-spacing: 3px;
+            font-size: 12px;
+        }
+
+        .invite-btn {
+            margin-top: 20px;
+            width: 100%;
+            background: rgba(201,169,110,0.12);
+            border: 1px solid rgba(201,169,110,0.5);
+            color: var(--gold);
+            font-size: 13px;
+            letter-spacing: 4px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .invite-btn:hover {
+            background: rgba(201,169,110,0.2);
+            border-color: var(--gold);
+        }
+
+        .invite-error {
+            color: #c86b6b;
+            font-size: 11px;
+            letter-spacing: 2px;
+            margin-top: 16px;
+            display: none;
+        }
+
+        .invite-error.show {
+            display: block;
+        }
+
+        /* 过渡动画 */
+        .transition-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
+            z-index: 10000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .transition-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .transition-overlay.fade-out {
+            opacity: 0;
+        }
+
+        .transition-content {
+            text-align: center;
+        }
+
+        .transition-logo {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 48px;
+            font-weight: 600;
+            color: var(--gold);
+            letter-spacing: 16px;
+            margin-bottom: 32px;
+            text-shadow: 0 0 40px rgba(201,169,110,0.5);
+            animation: logoGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes logoGlow {
+            0%, 100% { text-shadow: 0 0 40px rgba(201,169,110,0.3); }
+            50% { text-shadow: 0 0 60px rgba(201,169,110,0.7); }
+        }
+
+        .transition-text {
+            font-size: 14px;
+            color: var(--gold-light);
+            letter-spacing: 8px;
+            margin-bottom: 48px;
+            opacity: 0.8;
+        }
+
+        .transition-progress {
+            width: 240px;
+            height: 1px;
+            background: rgba(201,169,110,0.15);
+            margin: 0 auto;
+            overflow: hidden;
+        }
+
+        .transition-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            animation: progressMove 1.8s ease-in-out infinite;
+        }
+
+        @keyframes progressMove {
+            0% { transform: translateX(-100%); width: 60%; }
+            100% { transform: translateX(300%); width: 60%; }
+        }
+
+        .nav-vip-btn {
+            position: absolute;
+            right: 60px;
+            background: rgba(201,169,110,0.15);
+            border: 1px solid rgba(201,169,110,0.5);
+            color: var(--gold);
+            font-size: 11px;
+            letter-spacing: 2px;
+            padding: 8px 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .nav-vip-btn:hover {
+            background: rgba(201,169,110,0.25);
+            border-color: var(--gold);
+        }
+
+        .nav-logout-btn {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.15);
+            color: var(--gray);
+            padding: 8px 16px;
+            font-size: 11px;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+            margin-left: 12px;
+        }
+
+        .nav-logout-btn:hover {
+            border-color: rgba(255,255,255,0.4);
+            color: var(--white);
+        }
+
+        /* 贵宾中心 */
+        .vip-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.95);
+            z-index: 3000;
+            overflow-y: auto;
+        }
+
+        .vip-overlay.active {
+            display: block;
+        }
+
+        .vip-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 48px 24px 80px;
+        }
+
+        .vip-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .vip-title {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 32px;
+            color: var(--gold);
+            letter-spacing: 6px;
+            margin-bottom: 8px;
+        }
+
+        .vip-sub {
+            font-size: 11px;
+            color: var(--gray);
+            letter-spacing: 3px;
+        }
+
+        .vip-logout {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.15);
+            color: var(--gray);
+            padding: 8px 16px;
+            font-size: 11px;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .vip-logout:hover {
+            border-color: rgba(255,255,255,0.4);
+            color: var(--white);
+        }
+
+        .vip-close {
+            position: fixed;
+            top: 20px;
+            right: 28px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(201,169,110,0.3);
+            color: var(--gold-light);
+            width: 42px;
+            height: 42px;
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 3010;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .vip-close:hover {
+            background: rgba(201,169,110,0.15);
+            border-color: var(--gold);
+        }
+
+        .vip-tabs {
+            display: flex;
+            gap: 4px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            margin-bottom: 32px;
+        }
+
+        .vip-tab {
+            background: transparent;
+            border: none;
+            color: var(--gray);
+            font-size: 13px;
+            letter-spacing: 2px;
+            padding: 14px 28px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -1px;
+        }
+
+        .vip-tab:hover {
+            color: var(--gold-light);
+        }
+
+        .vip-tab.active {
+            color: var(--gold);
+            border-bottom-color: var(--gold);
+        }
+
+        .vip-tab-content {
+            display: none;
+        }
+
+        .vip-tab-content.active {
+            display: block;
+        }
+
+        /* 收藏 */
+        .fav-section-title {
+            font-size: 12px;
+            color: var(--gray);
+            letter-spacing: 3px;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .fav-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .fav-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(201,169,110,0.15);
+            overflow: hidden;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .fav-card:hover {
+            border-color: rgba(201,169,110,0.4);
+        }
+
+        .fav-card img {
+            width: 100%;
+            aspect-ratio: 4/3;
+            object-fit: cover;
+            display: block;
+        }
+
+        .fav-card-info {
+            padding: 12px;
+        }
+
+        .fav-card-name {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 14px;
+            color: var(--white);
+            margin-bottom: 4px;
+        }
+
+        .fav-card-desc {
+            font-size: 11px;
+            color: var(--gray);
+            letter-spacing: 1px;
+        }
+
+        .fav-card-remove {
+            background: transparent;
+            border: none;
+            color: rgba(200,107,107,0.5);
+            cursor: pointer;
+            font-size: 12px;
+            padding: 4px 8px;
+            float: right;
+        }
+
+        .fav-card-remove:hover {
+            color: #c86b6b;
+        }
+
+        .fav-empty {
+            text-align: center;
+            padding: 60px;
+            color: var(--gray);
+            font-size: 13px;
+            letter-spacing: 2px;
+        }
+
+        .fav-empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .fav-empty-text {
+            margin-bottom: 8px;
+        }
+
+        .fav-empty-guide {
+            font-size: 11px;
+            color: var(--gray-light);
+        }
+
+        /* 密钥管理 */
+        .key-limit-info {
+            font-size: 11px;
+            color: var(--gray);
+            letter-spacing: 2px;
+            margin-bottom: 16px;
+        }
+
+        .key-gen-row {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .key-gen-input {
+            flex: 1;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(201,169,110,0.25);
+            color: var(--gold);
+            font-size: 14px;
+            letter-spacing: 2px;
+            text-align: center;
+            padding: 14px;
+            font-family: 'Helvetica Neue', 'Arial', sans-serif;
+            outline: none;
+        }
+
+        .key-gen-input:focus {
+            border-color: var(--gold);
+        }
+
+        .key-gen-input::placeholder {
+            color: rgba(201,169,110,0.25);
+            font-size: 11px;
+            letter-spacing: 2px;
+        }
+
+        .key-gen-btn {
+            background: rgba(201,169,110,0.12);
+            border: 1px solid rgba(201,169,110,0.5);
+            color: var(--gold);
+            font-size: 12px;
+            letter-spacing: 3px;
+            padding: 14px 24px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+
+        .key-gen-btn:hover:not(:disabled) {
+            background: rgba(201,169,110,0.2);
+            border-color: var(--gold);
+        }
+
+        .key-gen-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .key-list {
+            border: 1px solid rgba(201,169,110,0.12);
+        }
+
+        .key-list-header {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            padding: 12px 16px;
+            font-size: 10px;
+            color: var(--gray);
+            letter-spacing: 2px;
+            border-bottom: 1px solid rgba(201,169,110,0.12);
+        }
+
+        .key-list-item {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            padding: 14px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            align-items: center;
+        }
+
+        .key-list-item:last-child {
+            border-bottom: none;
+        }
+
+        .key-code {
+            font-family: 'Helvetica Neue', 'Arial', sans-serif;
+            font-size: 16px;
+            color: var(--gold);
+            letter-spacing: 4px;
+        }
+
+        .key-name {
+            font-size: 10px;
+            color: #555;
+            letter-spacing: 1px;
+            margin-top: 2px;
+        }
+
+        .key-copy-btn {
+            background: transparent;
+            border: 1px solid rgba(201,169,110,0.3);
+            color: var(--gold-light);
+            font-size: 10px;
+            letter-spacing: 2px;
+            padding: 5px 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+            margin-right: 8px;
+        }
+
+        .key-copy-btn:hover {
+            background: rgba(201,169,110,0.1);
+            border-color: var(--gold);
+        }
+
+        .key-del-btn {
+            background: transparent;
+            border: none;
+            color: rgba(200,107,107,0.4);
+            cursor: pointer;
+            font-size: 14px;
+            padding: 4px 8px;
+        }
+
+        .key-del-btn:hover {
+            color: #c86b6b;
+        }
+
+        .key-status.used {
+            font-size: 10px;
+            color: var(--gray);
+            letter-spacing: 2px;
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 4px 10px;
+        }
+
+        .key-empty {
+            text-align: center;
+            padding: 40px;
+            color: var(--gray);
+            font-size: 12px;
+            letter-spacing: 2px;
+        }
+
+        /* 密钥表单 */
+        .key-form-box {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(201,169,110,0.2);
+            padding: 28px;
+            margin-bottom: 24px;
+        }
+
+        .key-form-title {
+            font-size: 13px;
+            color: var(--gold);
+            letter-spacing: 3px;
+            margin-bottom: 20px;
+        }
+
+        .key-form-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .key-form-field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .key-form-field.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .key-form-field label {
+            font-size: 11px;
+            color: var(--gray);
+            letter-spacing: 2px;
+        }
+
+        .required {
+            color: #c86b6b;
+        }
+
+        .key-form-field input,
+        .key-form-field select,
+        .key-form-field textarea {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(201,169,110,0.25);
+            color: var(--gold-light);
+            font-size: 13px;
+            padding: 12px 14px;
+            font-family: 'Helvetica Neue', 'Arial', sans-serif;
+            outline: none;
+            transition: all 0.3s;
+            box-sizing: border-box;
+        }
+
+        .key-form-field input:focus,
+        .key-form-field select:focus,
+        .key-form-field textarea:focus {
+            border-color: var(--gold);
+            background: rgba(201,169,110,0.06);
+        }
+
+        .key-form-field input::placeholder,
+        .key-form-field textarea::placeholder {
+            color: rgba(201,169,110,0.25);
+            font-size: 12px;
+        }
+
+        .key-form-field select {
+            appearance: none;
+            cursor: pointer;
+        }
+
+        .key-form-field select option {
+            background: #1a1a1a;
+            color: var(--gold-light);
+        }
+
+        .key-form-field textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .key-form-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .key-form-cancel {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.1);
+            color: var(--gray);
+            font-size: 12px;
+            letter-spacing: 2px;
+            padding: 12px 24px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .key-form-cancel:hover {
+            border-color: rgba(255,255,255,0.3);
+            color: var(--gray-light);
+        }
+
+        .key-form-submit {
+            background: rgba(201,169,110,0.15);
+            border: 1px solid rgba(201,169,110,0.5);
+            color: var(--gold);
+            font-size: 12px;
+            letter-spacing: 3px;
+            padding: 12px 28px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .key-form-submit:hover {
+            background: rgba(201,169,110,0.25);
+            border-color: var(--gold);
+        }
+
+        /* 密钥生成结果 */
+        .key-result-box {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(201,169,110,0.25);
+            padding: 32px;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .key-result-label {
+            font-size: 11px;
+            color: var(--gray);
+            letter-spacing: 3px;
+            margin-bottom: 12px;
+        }
+
+        .key-result-code {
+            font-family: 'Helvetica Neue', 'Arial', sans-serif;
+            font-size: 36px;
+            color: var(--gold);
+            letter-spacing: 8px;
+            margin-bottom: 8px;
+        }
+
+        .key-result-name {
+            font-size: 12px;
+            color: var(--gray);
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+        }
+
+        .key-result-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .key-copy-btn {
+            background: rgba(201,169,110,0.1);
+            border: 1px solid rgba(201,169,110,0.4);
+            color: var(--gold);
+            font-size: 11px;
+            letter-spacing: 2px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .key-copy-btn:hover {
+            background: rgba(201,169,110,0.2);
+            border-color: var(--gold);
+        }
+
+        .key-new-btn {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.1);
+            color: var(--gray);
+            font-size: 11px;
+            letter-spacing: 2px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .key-new-btn:hover {
+            border-color: rgba(255,255,255,0.3);
+            color: var(--gray-light);
+        }
+
+        /* 收藏按钮 */
+        .fav-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(0,0,0,0.5);
+            border: 1px solid rgba(201,169,110,0.3);
+            color: rgba(201,169,110,0.6);
+            width: 32px;
+            height: 32px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 5;
+        }
+
+        .fav-btn:hover,
+        .fav-btn.active {
+            background: rgba(201,169,110,0.2);
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        .fav-btn.active {
+            color: #c86b6b;
+            border-color: rgba(200,107,107,0.5);
+        }
+
+        /* 详细资料弹窗 */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.92);
+            z-index: 2000;
+            overflow-y: auto;
+        }
+
+        .modal-overlay.active {
+            display: block;
+        }
+
+        .modal-close {
+            position: fixed;
+            top: 20px;
+            right: 28px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(201,169,110,0.3);
+            color: var(--gold-light);
+            width: 42px;
+            height: 42px;
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 2010;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close:hover {
+            background: rgba(201,169,110,0.15);
+            border-color: var(--gold);
+        }
+
+        /* 咨询弹窗 */
+        .inquiry-modal {
+            max-width: 560px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .inquiry-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .inquiry-title {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 32px;
+            color: var(--gold);
+            letter-spacing: 4px;
+            margin-bottom: 12px;
+        }
+
+        .inquiry-subtitle {
+            font-size: 13px;
+            color: var(--gray);
+            letter-spacing: 1px;
+        }
+
+        .inquiry-horse-info {
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+            background: var(--black-card);
+            border: 1px solid var(--black-border);
+            margin-bottom: 32px;
+        }
+
+        .inquiry-horse-img {
+            width: 100px;
+            height: 75px;
+            overflow: hidden;
+            border-radius: 8px;
+        }
+
+        .inquiry-horse-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .inquiry-horse-detail {
+            flex: 1;
+        }
+
+        .inquiry-horse-name {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 20px;
+            color: var(--white);
+            margin-bottom: 6px;
+        }
+
+        .inquiry-horse-chip {
+            font-size: 11px;
+            color: var(--gray);
+            margin-bottom: 8px;
+        }
+
+        .inquiry-horse-price {
+            font-size: 18px;
+            color: var(--gold);
+            font-weight: 500;
+        }
+
+        .inquiry-form {
+            margin-bottom: 32px;
+        }
+
+        .inquiry-form-group {
+            margin-bottom: 20px;
+        }
+
+        .inquiry-form-group label {
+            display: block;
+            font-size: 11px;
+            color: var(--gray);
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+        }
+
+        .inquiry-input,
+        .inquiry-textarea {
+            width: 100%;
+            background: var(--black-card);
+            border: 1px solid var(--black-border);
+            color: var(--white);
+            padding: 14px 16px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        .inquiry-input:focus,
+        .inquiry-textarea:focus {
+            outline: none;
+            border-color: var(--gold);
+        }
+
+        .inquiry-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .btn-inquiry-submit {
+            width: 100%;
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+            border: none;
+            color: var(--black);
+            padding: 16px;
+            font-size: 14px;
+            letter-spacing: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+            font-weight: 500;
+        }
+
+        .btn-inquiry-submit:hover {
+            box-shadow: 0 4px 30px rgba(201,169,110,0.4);
+            transform: translateY(-2px);
+        }
+
+        .inquiry-contact {
+            text-align: center;
+            padding-top: 24px;
+            border-top: 1px solid var(--black-border);
+        }
+
+        .inquiry-contact p {
+            font-size: 12px;
+            color: var(--gray);
+            margin-bottom: 12px;
+        }
+
+        .inquiry-contact-item {
+            font-size: 13px;
+            color: var(--gold-light);
+            margin-bottom: 6px;
+        }
+
+        .owner-story {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .owner-story-title {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 32px;
+            font-weight: 600;
+            color: var(--gold-light);
+            letter-spacing: 4px;
+            margin-bottom: 24px;
+        }
+
+        .owner-story-divider {
+            width: 120px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            margin: 0 auto 32px;
+        }
+
+        .owner-story-text {
+            font-size: 18px;
+            line-height: 1.9;
+            color: var(--white);
+            text-align: left;
+            max-width: 720px;
+            margin: 0 auto 40px;
+            letter-spacing: 1px;
+        }
+
+        .modal-close-btn {
+            background: transparent;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            padding: 12px 48px;
+            font-size: 14px;
+            letter-spacing: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .modal-close-btn:hover {
+            background: var(--gold);
+            color: var(--dark-bg);
+        }
+
+        .modal-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 48px 24px 80px;
+        }
+
+        .modal-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .modal-title {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 48px;
+            font-weight: 600;
+            color: var(--white);
+            letter-spacing: 6px;
+            margin-bottom: 12px;
+        }
+
+        .modal-chip {
+            font-size: 12px;
+            color: var(--gray);
+            letter-spacing: 2px;
+            margin-bottom: 24px;
+        }
+
+        .modal-owner-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+            justify-content: center;
+        }
+
+        .modal-info-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-info-label {
+            font-size: 12px;
+            color: var(--gray);
+            letter-spacing: 2px;
+        }
+
+        .modal-info-value {
+            font-size: 14px;
+            color: var(--gold-light);
+            letter-spacing: 1px;
+            font-family: 'Helvetica Neue', 'Arial', sans-serif;
+        }
+
+        .modal-tabs {
+            display: flex;
+            gap: 4px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            margin-bottom: 32px;
+        }
+
+        .modal-tab {
+            background: transparent;
+            border: none;
+            color: var(--gray);
+            font-size: 13px;
+            letter-spacing: 2px;
+            padding: 14px 24px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -1px;
+        }
+
+        .modal-tab:hover {
+            color: var(--gold-light);
+        }
+
+        .modal-tab.active {
+            color: var(--gold);
+            border-bottom-color: var(--gold);
+        }
+
+        .modal-tab-content {
+            display: none;
+        }
+
+        .modal-tab-content.active {
+            display: block;
+        }
+
+        /* 相册 */
+        .photo-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+        }
+
+        .photo-thumb {
+            overflow: hidden;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: all 0.3s;
+        }
+
+        .photo-thumb:hover,
+        .photo-thumb-main {
+            opacity: 1;
+        }
+
+        .photo-thumb img {
+            width: 100%;
+            aspect-ratio: 4/3;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* 视频 */
+        .video-grid {
+            display: grid;
+            grid-template-columns: 1fr 280px;
+            gap: 20px;
+        }
+
+        .video-featured video {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #000;
+            display: block;
+        }
+
+        .video-featured-label {
+            text-align: center;
+            padding: 12px;
+            font-size: 12px;
+            color: var(--gray);
+            letter-spacing: 2px;
+        }
+
+        .video-thumb-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .video-thumb-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: all 0.3s;
+            padding: 8px;
+            border: 1px solid transparent;
+        }
+
+        .video-thumb-item:hover,
+        .video-thumb-item.active {
+            opacity: 1;
+            border-color: rgba(201,169,110,0.3);
+            background: rgba(201,169,110,0.05);
+        }
+
+        .video-thumb-item video {
+            width: 80px;
+            aspect-ratio: 16/9;
+            object-fit: cover;
+            background: #000;
+        }
+
+        .video-thumb-label {
+            font-size: 12px;
+            color: var(--gray-light);
+            letter-spacing: 1px;
+        }
+
+        /* 血统 */
+        .bloodline-cert {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(201,169,110,0.15);
+            padding: 40px;
+        }
+
+        .bloodline-cert h4 {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 18px;
+            color: var(--gold);
+            letter-spacing: 4px;
+            margin-bottom: 32px;
+            text-align: center;
+        }
+
+        .bloodline-tree {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0;
+        }
+
+        .bloodline-gen {
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+        }
+
+        .bloodline-parent-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .bloodline-label {
+            font-size: 10px;
+            color: var(--gray);
+            letter-spacing: 2px;
+        }
+
+        .bloodline-node-detail {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(201,169,110,0.2);
+            padding: 16px 24px;
+            text-align: center;
+            min-width: 160px;
+        }
+
+        .bloodline-node-detail.current {
+            border-color: var(--gold);
+            background: rgba(201,169,110,0.08);
+        }
+
+        .bn-name {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 16px;
+            color: var(--white);
+            margin-bottom: 4px;
+        }
+
+        .bn-title {
+            font-size: 11px;
+            color: var(--gray);
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        .bn-chip {
+            font-size: 10px;
+            color: var(--gray);
+            letter-spacing: 1px;
+            font-family: 'Helvetica Neue', 'Arial', sans-serif;
+        }
+
+        .bloodline-arrow-down {
+            font-size: 20px;
+            color: rgba(201,169,110,0.5);
+            padding: 8px 0;
+        }
+
+        /* 健康档案 */
+        .health-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .health-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(201,169,110,0.12);
+            padding: 24px;
+        }
+
+        .health-card-title {
+            font-size: 13px;
+            color: var(--gold);
+            letter-spacing: 2px;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .health-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+        }
+
+        .health-item-label {
+            font-size: 12px;
+            color: var(--gray);
+            letter-spacing: 1px;
+        }
+
+        .health-item-value {
+            font-size: 13px;
+            font-family: 'Helvetica Neue', 'Arial', sans-serif;
+        }
+
+        .health-item-value.good {
+            color: #7cb87c;
+        }
+
+        .health-item-value.warn {
+            color: #e8c84a;
+        }
+
+        .health-item-value.bad {
+            color: #c86b6b;
+        }
+
+        /* 下载 */
+        .download-section {
+            text-align: center;
+            padding: 40px 0;
+        }
+
+        .download-btns {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .download-btn {
+            background: rgba(201,169,110,0.1);
+            border: 1px solid rgba(201,169,110,0.4);
+            color: var(--gold);
+            padding: 14px 32px;
+            font-size: 12px;
+            letter-spacing: 3px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .download-btn:hover {
+            background: rgba(201,169,110,0.2);
+            border-color: var(--gold);
+        }
+
+        /* 竞赛成绩 */
+        .awards-list {
+            padding: 20px 0;
+        }
+
+        .award-item {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            padding: 20px 24px;
+            background: var(--black-card);
+            border: 1px solid var(--black-border);
+            margin-bottom: 16px;
+            transition: all 0.3s;
+        }
+
+        .award-item:hover {
+            border-color: var(--gold);
+        }
+
+        .award-year {
+            font-size: 28px;
+            font-weight: 300;
+            color: var(--gold);
+            min-width: 80px;
+        }
+
+        .award-content {
+            flex: 1;
+        }
+
+        .award-title {
+            font-size: 16px;
+            color: var(--white);
+            margin-bottom: 4px;
+        }
+
+        .award-org {
+            font-size: 12px;
+            color: var(--gray);
+        }
+
+        .no-awards {
+            text-align: center;
+            padding: 60px;
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        /* 交易记录 */
+        .transaction-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        .transaction-table th {
+            text-align: left;
+            padding: 12px 16px;
+            color: var(--gray);
+            letter-spacing: 2px;
+            border-bottom: 1px solid rgba(201,169,110,0.2);
+            font-weight: normal;
+        }
+
+        .transaction-table td {
+            padding: 12px 16px;
+            color: var(--gray-light);
+            letter-spacing: 1px;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            font-family: 'Helvetica Neue', 'Arial', sans-serif;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 滚动进度条 -->
+    <div class="scroll-progress" id="scrollProgress"></div>
+
+    <!-- 页面加载器 -->
+    <div class="page-loader" id="pageLoader">
+        <div class="page-loader-logo">盛世图腾</div>
+    </div>
+
+    <!-- 邀请密钥验证 -->
+    <div class="invite-overlay" id="inviteOverlay">
+        <div class="invite-box">
+            <div class="invite-logo">盛世图腾</div>
+            <div class="invite-sub">AKHAL-TEKE DIGITAL HERITAGE</div>
+            <input type="text" class="invite-input" id="inviteInput" placeholder="请输入邀请密钥" maxlength="32">
+            <button class="invite-btn" onclick="checkInvite()">验证密钥</button>
+            <div class="invite-error" id="inviteError">密钥错误，请重新输入</div>
+        </div>
+    </div>
+
+    <!-- 过渡动画 -->
+    <div class="transition-overlay" id="transitionOverlay">
+        <div class="transition-content">
+            <div class="transition-logo">盛世图腾</div>
+            <div class="transition-text">数字传承 · 永恒价值</div>
+            <div class="transition-progress">
+                <div class="transition-progress-bar"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // 邀请密钥（可修改）
+    const INVITE_KEY = 'SST2026';
+
+    // 页面加载完成后隐藏加载器
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            document.getElementById('pageLoader').classList.add('hidden');
+        }, 800);
+    });
+
+    // 合并滚动事件处理，优化性能
+    let scrollRAF = null;
+    window.addEventListener('scroll', () => {
+        if (scrollRAF) return;
+        scrollRAF = requestAnimationFrame(() => {
+            const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+            const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const progress = (scrollTop / scrollHeight) * 100;
+            document.getElementById('scrollProgress').style.width = progress + '%';
+
+            const btn = document.getElementById('backToTop');
+            if (btn) {
+                if (window.scrollY > 500) {
+                    btn.style.opacity = '1';
+                    btn.style.transform = 'translateY(0)';
+                } else {
+                    btn.style.opacity = '0';
+                    btn.style.transform = 'translateY(20px)';
+                }
+            }
+            scrollRAF = null;
+        });
+    }, { passive: true });
+
+    // 数字滚动动画
+    function animateNumbers() {
+        document.querySelectorAll('.stat-number').forEach(el => {
+            if (el.dataset.skip || el.dataset.animated) return;
+            const target = el.dataset.target;
+            if (!target) return;
+            const num = parseInt(target.replace(/,/g, ''));
+            const duration = 2000;
+            const start = 0;
+            const startTime = performance.now();
+            el.dataset.animated = 'true';
+            function update(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const eased = 1 - Math.pow(1 - progress, 3);
+                const current = Math.round(start + (num - start) * eased);
+                el.textContent = current.toLocaleString();
+                if (progress < 1) requestAnimationFrame(update);
+            }
+            requestAnimationFrame(update);
+        });
+    }
+
+    // 监听统计区域进入视口
+    const statsObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                animateNumbers();
+            }
+        });
+    }, { threshold: 0.5 });
+
+    document.querySelectorAll('.stats').forEach(el => statsObserver.observe(el));
+
+    // 回到顶部按钮
+    document.body.insertAdjacentHTML('beforeend', '<button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:\'smooth\'})">↑</button>');
+
+    // 创建金色粒子
+    function createParticles() {
+        const container = document.getElementById('heroParticles');
+        if (!container) return;
+        for (let i = 0; i < 20; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 8 + 's';
+            particle.style.animationDuration = (6 + Math.random() * 4) + 's';
+            const size = 2 + Math.random() * 3;
+            particle.style.width = size + 'px';
+            particle.style.height = size + 'px';
+            container.appendChild(particle);
+        }
+    }
+    createParticles();
+
+    // 从localStorage读取已生成的密钥（贵宾中心密钥）
+    function getKeys() {
+        return JSON.parse(localStorage.getItem('vip_keys') || '[]');
+    }
+
+    function saveKeys(keys) {
+        localStorage.setItem('vip_keys', JSON.stringify(keys));
+    }
+
+    function checkInvite() {
+        const key = document.getElementById('inviteInput').value.trim();
+        const error = document.getElementById('inviteError');
+        // 验证任意有效密钥 → 过渡动画后进入首页
+        if (key === INVITE_KEY || getKeys().find(k => k.code === key && !k.used)) {
+            if (key !== INVITE_KEY) {
+                // 普通密钥标记为已使用
+                const keys = getKeys();
+                const found = keys.find(k => k.code === key);
+                if (found) { found.used = true; saveKeys(keys); }
+            }
+            // 隐藏邀请页，显示过渡动画
+            window.scrollTo(0, 0);
+            document.getElementById('inviteOverlay').style.display = 'none';
+            const transition = document.getElementById('transitionOverlay');
+            transition.classList.add('active');
+
+            // 2.5秒后淡出过渡动画，进入首页
+            setTimeout(() => {
+                transition.classList.add('fade-out');
+                setTimeout(() => {
+                    transition.style.display = 'none';
+                    transition.classList.remove('active', 'fade-out');
+                    localStorage.setItem('invite_ok', '1');
+                    localStorage.setItem('is_admin', key === INVITE_KEY ? '1' : '0');
+                    showPlatformNav();
+                }, 500);
+            }, 2500);
+        } else {
+            error.classList.add('show');
+            document.getElementById('inviteInput').value = '';
+        }
+    }
+
+    function showPlatformNav() {
+        updateFavButtons();
+    }
+
+    function logout() {
+        localStorage.removeItem('invite_ok');
+        localStorage.removeItem('is_admin');
+        window.location.reload();
+    }
+
+    // ========== 贵宾中心 ==========
+
+    function openVipCenter() {
+        document.getElementById('vipOverlay').classList.add('active');
+        document.body.style.overflow = 'hidden';
+        renderFavorites();
+        renderVipKeys();
+        // 默认显示收藏标签，重置表单状态
+        document.querySelectorAll('.vip-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.vip-tab-content').forEach(c => c.classList.remove('active'));
+        document.querySelector('.vip-tab').classList.add('active');
+        document.getElementById('vip-fav').classList.add('active');
+        showKeyForm();
+    }
+
+    function closeVipCenter() {
+        document.getElementById('vipOverlay').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    function switchVipTab(btn, tabId) {
+        document.querySelectorAll('.vip-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.vip-tab-content').forEach(c => c.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(tabId).classList.add('active');
+        if (tabId === 'vip-keys') {
+            showKeyForm();
+        }
+    }
+
+    // 收藏
+    function getFavorites() {
+        return JSON.parse(localStorage.getItem('vip_favorites') || '{"horses":[],"jockeys":[]}');
+    }
+
+    function saveFavorites(fav) {
+        localStorage.setItem('vip_favorites', JSON.stringify(fav));
+    }
+
+    function toggleVideo(id) {
+        const video = document.getElementById('video-' + id);
+        const icon = document.getElementById('icon-' + id);
+        if (video.paused) {
+            video.play();
+            icon.textContent = '❚❚';
+        } else {
+            video.pause();
+            icon.textContent = '▶';
+        }
+    }
+
+    function toggleFavorite(type, id) {
+        const fav = getFavorites();
+        const arr = type === 'horse' ? fav.horses : fav.jockeys;
+        const idx = arr.indexOf(id);
+        if (idx > -1) {
+            arr.splice(idx, 1);
+        } else {
+            arr.push(id);
+        }
+        saveFavorites(fav);
+        renderFavorites();
+        updateFavButtons();
+    }
+
+    function updateFavButtons() {
+        const fav = getFavorites();
+        document.querySelectorAll('.fav-btn').forEach(btn => {
+            const id = btn.id.replace('fav-', '');
+            const isFav = fav.horses.includes(id) || fav.jockeys.includes(id);
+            btn.classList.toggle('active', isFav);
+            btn.textContent = isFav ? '♥' : '♡';
+        });
+    }
+
+    function renderFavorites() {
+        const fav = getFavorites();
+
+        // 渲染马匹收藏
+        const horseGrid = document.getElementById('favHorses');
+        if (fav.horses.length === 0) {
+            horseGrid.innerHTML = '<div class="fav-empty"><div class="fav-empty-icon">🐎</div><div class="fav-empty-text">暂无收藏的马匹</div><div class="fav-empty-guide">点击马匹卡片上的 ♡ 即可添加收藏</div></div>';
+        } else {
+            horseGrid.innerHTML = fav.horses.map(id => {
+                const d = horseData[id];
+                if (!d) return '';
+                return `<div class="fav-card">
+                    <div style="padding:8px 12px 0;text-align:right"><button class="fav-card-remove" onclick="toggleFavorite('horse','${id}')">✕</button></div>
+                    <img src="${d.videos[0]?.src || ''}" onerror="this.style.display='none'" alt="${d.name}">
+                    <div class="fav-card-info">
+                        <div class="fav-card-name">${d.name}</div>
+                        <div class="fav-card-desc">${d.chip}</div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        // 渲染骑师收藏
+        const jockeyGrid = document.getElementById('favJockeys');
+        if (fav.jockeys.length === 0) {
+            jockeyGrid.innerHTML = '<div class="fav-empty"><div class="fav-empty-icon">🏇</div><div class="fav-empty-text">暂无收藏的骑师</div><div class="fav-empty-guide">点击骑师卡片上的 ♡ 即可添加收藏</div></div>';
+        } else {
+            jockeyGrid.innerHTML = fav.jockeys.map(id => {
+                const j = jockeyData[id];
+                if (!j) return '';
+                return `<div class="fav-card">
+                    <div style="padding:8px 12px 0;text-align:right"><button class="fav-card-remove" onclick="toggleFavorite('jockey','${id}')">✕</button></div>
+                    <img src="${j.img}" onerror="this.style.display='none'" alt="${j.name}">
+                    <div class="fav-card-info">
+                        <div class="fav-card-name">${j.name}</div>
+                        <div class="fav-card-desc">${j.club}</div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+    }
+
+    // VIP密钥管理
+    const MAX_KEYS_PER_USER = 10;
+
+    function getVipKeys() {
+        return JSON.parse(localStorage.getItem('vip_keys') || '[]');
+    }
+
+    function saveVipKeys(keys) {
+        localStorage.setItem('vip_keys', JSON.stringify(keys));
+    }
+
+    function showKeyForm() {
+        document.getElementById('keyFormBox').style.display = 'block';
+        document.getElementById('keyResultBox').style.display = 'none';
+    }
+
+    function hideKeyForm() {
+        document.getElementById('keyFormBox').style.display = 'none';
+        clearKeyForm();
+    }
+
+    function clearKeyForm() {
+        document.getElementById('kf-name').value = '';
+        document.getElementById('kf-age').value = '';
+        document.getElementById('kf-gender').value = '';
+        document.getElementById('kf-job').value = '';
+        document.getElementById('kf-hashorse').value = '';
+        document.getElementById('kf-horseinfo').value = '';
+    }
+
+    function vipGenKey() {
+        const name = document.getElementById('kf-name').value.trim();
+        const age = document.getElementById('kf-age').value.trim();
+        const gender = document.getElementById('kf-gender').value;
+        const job = document.getElementById('kf-job').value.trim();
+        const hashorse = document.getElementById('kf-hashorse').value;
+        const horseinfo = document.getElementById('kf-horseinfo').value.trim();
+
+        if (!name || !age || !gender || !job || !hashorse || !horseinfo) {
+            alert('请填写完整信息');
+            return;
+        }
+
+        const keys = getVipKeys();
+        if (keys.length >= MAX_KEYS_PER_USER) return;
+
+        const code = 'SST-' + Math.random().toString(36).substr(2, 6).toUpperCase();
+        const clientInfo = { name, age, gender, job, hashorse, horseinfo };
+        keys.push({ code, clientInfo, used: false });
+        saveVipKeys(keys);
+
+        // 显示结果
+        document.getElementById('keyFormBox').style.display = 'none';
+        document.getElementById('keyResultBox').style.display = 'block';
+        document.getElementById('keyResultCode').textContent = code;
+        document.getElementById('keyResultName').textContent = name;
+
+        renderVipKeys();
+    }
+
+    function copyKeyResult() {
+        const code = document.getElementById('keyResultCode').textContent;
+        navigator.clipboard.writeText(code).then(() => {
+            const btn = document.getElementById('keyResultCopyBtn');
+            btn.textContent = '已复制';
+            setTimeout(() => btn.textContent = '复制密钥', 1500);
+        });
+    }
+
+    function vipDelKey(idx) {
+        const keys = getVipKeys();
+        keys.splice(idx, 1);
+        saveVipKeys(keys);
+        renderVipKeys();
+    }
+
+    function renderVipKeys() {
+        const keys = getVipKeys();
+        document.getElementById('keyLimitInfo').textContent = `已生成 ${keys.length}/${MAX_KEYS_PER_USER} 个密钥`;
+
+        const list = document.getElementById('vipKeyList');
+        if (keys.length === 0) {
+            list.innerHTML = '<div class="key-empty">暂无已生成的密钥</div>';
+            return;
+        }
+        list.innerHTML = `
+            <div class="key-list-header">
+                <span>密钥</span>
+                <span style="margin-right:80px">客户</span>
+                <span>操作</span>
+            </div>
+            ${keys.map((k, i) => `
+                <div class="key-list-item">
+                    <div>
+                        <div class="key-code">${k.code}</div>
+                        <div class="key-name">${k.clientInfo.name} · ${k.clientInfo.gender} · ${k.clientInfo.job}</div>
+                    </div>
+                    ${k.used
+                        ? '<span class="key-status used">已使用</span>'
+                        : `<button class="key-copy-btn" onclick="vipCopyKey('${k.code}', this)">复制</button>`}
+                    <button class="key-del-btn" onclick="vipDelKey(${i})">✕</button>
+                </div>
+            `).reverse().join('')}
+        `;
+    }
+
+    function vipCopyKey(code, btn) {
+        navigator.clipboard.writeText(code).then(() => {
+            btn.textContent = '已复制';
+            setTimeout(() => btn.textContent = '复制', 1500);
+        });
+    }
+
+    // 回车确认
+    document.getElementById('inviteInput').addEventListener('keyup', function(e) {
+        if (e.key === 'Enter') checkInvite();
+    });
+
+    // ?reset=1 则清除会话，显示输入页
+    if (window.location.search.includes('reset=1')) {
+        localStorage.removeItem('invite_ok');
+        localStorage.removeItem('is_admin');
+    }
+
+    // 已登录则直接进入首页
+    if (localStorage.getItem('invite_ok') === '1') {
+        window.scrollTo(0, 0);
+        document.getElementById('inviteOverlay').style.display = 'none';
+        showPlatformNav();
+    }
+    </script>
+
+    <!-- 导航 -->
+    <nav id="navbar">
+        <div class="logo">
+            盛世图腾
+        </div>
+        <ul class="nav-links">
+            <li><a href="#featured">精选马匹</a></li>
+            <li><a href="#jockeys">签约骑师</a></li>
+            <li><a href="#bloodline">血统图谱</a></li>
+            <li><a href="#about">关于我们</a></li>
+        </ul>
+        <button class="nav-vip-btn" onclick="openVipCenter()">贵宾中心</button>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-video-bg" style="background-image: url('../../汗血马/玉龙驹.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat;"></div>
+        <div class="hero-overlay"></div>
+        <div class="hero-particles" id="heroParticles"></div>
+        <div class="hero-content">
+            <div class="hero-badge">数字确权 · 权威认证</div>
+            <h1>汗血宝马<br>数字遗产守护者</h1>
+            <p class="hero-subtitle">AKHAL-TEKE DIGITAL PORTAL</p>
+            <p class="hero-desc">
+                选择一匹汗血马，不仅是拥有一份珍贵的资产，更是传承一份永恒的数字遗产。<br>
+                我们以区块链技术确保产权清晰，以权威认证保障交易安全。
+            </p>
+            <div class="hero-cta">
+                <a href="yulong.html" class="btn-hero">邀您鉴赏玉龙驹</a>
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <span>SCROLL</span>
+            <div class="scroll-line"></div>
+        </div>
+    </section>
+
+    <!-- 数据统计 -->
+    <section class="stats">
+        <div class="stat-item fade-in">
+            <div class="stat-number" data-target="3500">0</div>
+            <div class="stat-label">全球存栏量</div>
+        </div>
+        <div class="stat-item fade-in">
+            <div class="stat-number" data-target="128">0</div>
+            <div class="stat-label">平台认证马匹</div>
+        </div>
+        <div class="stat-item fade-in">
+            <div class="stat-number" data-target="12">0</div>
+            <div class="stat-label">顶级育马场</div>
+        </div>
+        <div class="stat-item fade-in">
+            <div class="stat-number" data-target="9999" data-skip>∞</div>
+            <div class="stat-label">数字永续传承</div>
+        </div>
+    </section>
+
+    <!-- 精选马匹 -->
+    <section class="featured" id="featured">
+        <div class="section-header">
+            <div class="section-tag">Curated Collection</div>
+            <h2 class="section-title">精选名马</h2>
+            <p class="section-desc">每一匹马都经过严格审核，拥有完整的血统证书与健康档案</p>
+        </div>
+        <div class="horses-grid">
+
+            <!-- 玉龙驹 -->
+            <div class="horse-card fade-in" dataHorse="yulong">
+                <div class="horse-card-media">
+                    <video id="video-yulong" src="../../汗血马/玉龙驹.mp4" muted loop playsinline></video>
+                    <span class="horse-card-status status-sale">待售</span>
+                    <div class="play-btn-overlay" onclick="toggleVideo('yulong')"><span class="play-btn-icon" id="icon-yulong">▶</span></div>
+                    <button class="fav-btn" id="fav-yulong" onclick="toggleFavorite('horse','yulong')">♡</button>
+                </div>
+                <div class="horse-card-info">
+                    <h3 class="horse-card-name">玉龙驹</h3>
+                    <div class="horse-card-chip">芯片号：SST-AK-2021-001</div>
+                    <div class="horse-card-meta-row">
+                        <span class="meta-tag">雄</span>
+                        <span class="meta-tag">5岁</span>
+                        <span class="meta-tag">白色</span>
+                        <span class="meta-tag">163cm</span>
+                        <span class="meta-tag">475kg</span>
+                    </div>
+                    <div class="horse-card-status-row">
+                        <div class="status-badge status-sale-badge">待售</div>
+                        <div class="location-tag">所在地：长春</div>
+                        <div class="owner-tag owner-none">无主</div>
+                    </div>
+                    <div class="horse-card-bottom">
+                        <div class="horse-card-price">
+                            <span>指导价 </span>
+                            <strong>¥ 3,800 万</strong>
+                        </div>
+                        <div class="horse-card-actions">
+                            <button class="btn-detail" onclick="openDetail('yulong')">查看详细资料</button>
+                            <button class="btn-inquire" onclick="openInquiry('yulong')">立即咨询</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 赤兔 -->
+            <div class="horse-card fade-in" dataHorse="chitu">
+                <div class="horse-card-media">
+                    <video id="video-chitu" src="../../汗血马/赤兔.mp4" muted loop playsinline></video>
+                    <span class="horse-card-status status-breeding">配种中</span>
+                    <div class="play-btn-overlay" onclick="toggleVideo('chitu')"><span class="play-btn-icon" id="icon-chitu">▶</span></div>
+                    <button class="fav-btn" id="fav-chitu" onclick="toggleFavorite('horse','chitu')">♡</button>
+                </div>
+                <div class="horse-card-info">
+                    <h3 class="horse-card-name">赤兔</h3>
+                    <div class="horse-card-chip">芯片号：SST-AK-2018-002</div>
+                    <div class="horse-card-meta-row">
+                        <span class="meta-tag">雄</span>
+                        <span class="meta-tag">7岁</span>
+                        <span class="meta-tag">赤褐色</span>
+                        <span class="meta-tag">160cm</span>
+                        <span class="meta-tag">468kg</span>
+                    </div>
+                    <div class="horse-card-status-row">
+                        <div class="status-badge status-breeding-badge">配种中</div>
+                        <div class="location-tag">所在地：杭州</div>
+                        <div class="owner-tag owner-none">无主</div>
+                    </div>
+                    <div class="horse-card-bottom">
+                        <div class="horse-card-price">
+                            <span>配种费 </span>
+                            <strong>¥ 200 万/年</strong>
+                        </div>
+                        <div class="horse-card-actions">
+                            <button class="btn-detail" onclick="openDetail('chitu')">查看详细资料</button>
+                            <button class="btn-inquire" onclick="openInquiry('chitu')">立即咨询</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 将军 -->
+            <div class="horse-card fade-in" dataHorse="jiangjun">
+                <div class="horse-card-media">
+                    <video id="video-jiangjun" src="../../汗血马/将军.mp4" muted loop playsinline></video>
+                    <span class="horse-card-status status-owned">有主</span>
+                    <div class="play-btn-overlay" onclick="toggleVideo('jiangjun')"><span class="play-btn-icon" id="icon-jiangjun">▶</span></div>
+                    <button class="fav-btn" id="fav-jiangjun" onclick="toggleFavorite('horse','jiangjun')">♡</button>
+                </div>
+                <div class="horse-card-info">
+                    <h3 class="horse-card-name">将军</h3>
+                    <div class="horse-card-chip">芯片号：SST-AK-2019-003</div>
+                    <div class="horse-card-meta-row">
+                        <span class="meta-tag">雄</span>
+                        <span class="meta-tag">9岁</span>
+                        <span class="meta-tag">黑色</span>
+                        <span class="meta-tag">168cm</span>
+                        <span class="meta-tag">520kg</span>
+                    </div>
+                    <div class="horse-card-status-row">
+                        <div class="status-badge status-owned-badge">有主</div>
+                        <div class="location-tag">所在地：杭州</div>
+                        <div class="owner-tag owner-has" onclick="showOwnerStory('jiangjun')">主人：马云</div>
+                    </div>
+                    <div class="horse-card-bottom">
+                        <div class="horse-card-price">
+                            <span>估值 </span>
+                            <strong>¥ 4,200 万</strong>
+                        </div>
+                        <div class="horse-card-actions">
+                            <button class="btn-detail" onclick="openDetail('jiangjun')">查看详细资料</button>
+                            <button class="btn-inquire" onclick="openInquiry('jiangjun')">立即咨询</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 烈焰 -->
+            <div class="horse-card fade-in" dataHorse="lieyan">
+                <div class="horse-card-media">
+                    <video id="video-lieyan" src="../../汗血马/烈焰.mp4" muted loop playsinline></video>
+                    <span class="horse-card-status status-breeding">配种中</span>
+                    <div class="play-btn-overlay" onclick="toggleVideo('lieyan')"><span class="play-btn-icon" id="icon-lieyan">▶</span></div>
+                    <button class="fav-btn" id="fav-lieyan" onclick="toggleFavorite('horse','lieyan')">♡</button>
+                </div>
+                <div class="horse-card-info">
+                    <h3 class="horse-card-name">烈焰</h3>
+                    <div class="horse-card-chip">芯片号：SST-AK-2020-004</div>
+                    <div class="horse-card-meta-row">
+                        <span class="meta-tag">雄</span>
+                        <span class="meta-tag">5岁</span>
+                        <span class="meta-tag">火红色</span>
+                        <span class="meta-tag">164cm</span>
+                        <span class="meta-tag">490kg</span>
+                    </div>
+                    <div class="horse-card-status-row">
+                        <div class="status-badge status-breeding-badge">配种中</div>
+                        <div class="location-tag">所在地：长春</div>
+                        <div class="owner-tag owner-has" onclick="showOwnerStory('lieyan')">主人：傅园慧</div>
+                    </div>
+                    <div class="horse-card-bottom">
+                        <div class="horse-card-price">
+                            <span>配种费 </span>
+                            <strong>¥ 180 万/年</strong>
+                        </div>
+                        <div class="horse-card-actions">
+                            <button class="btn-detail" onclick="openDetail('lieyan')">查看详细资料</button>
+                            <button class="btn-inquire" onclick="openInquiry('lieyan')">立即咨询</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 汉白玉 -->
+            <div class="horse-card fade-in" dataHorse="hanbaiyu">
+                <div class="horse-card-media">
+                    <video id="video-hanbaiyu" src="../../汗血马/汉白玉.mp4" muted loop playsinline></video>
+                    <span class="horse-card-status status-owned">有主</span>
+                    <div class="play-btn-overlay" onclick="toggleVideo('hanbaiyu')"><span class="play-btn-icon" id="icon-hanbaiyu">▶</span></div>
+                    <button class="fav-btn" id="fav-hanbaiyu" onclick="toggleFavorite('horse','hanbaiyu')">♡</button>
+                </div>
+                <div class="horse-card-info">
+                    <h3 class="horse-card-name">汉白玉</h3>
+                    <div class="horse-card-chip">芯片号：SST-AK-2021-005</div>
+                    <div class="horse-card-meta-row">
+                        <span class="meta-tag">雌</span>
+                        <span class="meta-tag">4岁</span>
+                        <span class="meta-tag">白色</span>
+                        <span class="meta-tag">162cm</span>
+                        <span class="meta-tag">472kg</span>
+                    </div>
+                    <div class="horse-card-status-row">
+                        <div class="status-badge status-owned-badge">有主</div>
+                        <div class="location-tag">所在地：杭州</div>
+                        <div class="owner-tag owner-has" onclick="showOwnerStory('hanbaiyu')">主人：赵薇</div>
+                    </div>
+                    <div class="horse-card-bottom">
+                        <div class="horse-card-price">
+                            <span>成交价 </span>
+                            <strong>¥ 2,100 万</strong>
+                        </div>
+                        <div class="horse-card-actions">
+                            <button class="btn-detail" onclick="openDetail('hanbaiyu')">查看详细资料</button>
+                            <button class="btn-inquire" onclick="openInquiry('hanbaiyu')">立即咨询</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 黑风 -->
+            <div class="horse-card fade-in" dataHorse="heifeng">
+                <div class="horse-card-media">
+                    <video id="video-heifeng" src="../../汗血马/黑风.mp4" muted loop playsinline></video>
+                    <span class="horse-card-status status-sale">待售</span>
+                    <div class="play-btn-overlay" onclick="toggleVideo('heifeng')"><span class="play-btn-icon" id="icon-heifeng">▶</span></div>
+                    <button class="fav-btn" id="fav-heifeng" onclick="toggleFavorite('horse','heifeng')">♡</button>
+                </div>
+                <div class="horse-card-info">
+                    <h3 class="horse-card-name">黑风</h3>
+                    <div class="horse-card-chip">芯片号：SST-AK-2016-006</div>
+                    <div class="horse-card-meta-row">
+                        <span class="meta-tag">雄</span>
+                        <span class="meta-tag">9岁</span>
+                        <span class="meta-tag">黑色</span>
+                        <span class="meta-tag">167cm</span>
+                        <span class="meta-tag">505kg</span>
+                    </div>
+                    <div class="horse-card-status-row">
+                        <div class="status-badge status-sale-badge">待售</div>
+                        <div class="location-tag">所在地：长春</div>
+                        <div class="owner-tag owner-none">无主</div>
+                    </div>
+                    <div class="horse-card-bottom">
+                        <div class="horse-card-price">
+                            <span>指导价 </span>
+                            <strong>¥ 1,600 万</strong>
+                        </div>
+                        <div class="horse-card-actions">
+                            <button class="btn-detail" onclick="openDetail('heifeng')">查看详细资料</button>
+                            <button class="btn-inquire" onclick="openInquiry('heifeng')">立即咨询</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- 骑师展示 -->
+    <section class="jockeys" id="jockeys">
+        <div class="section-header">
+            <div class="section-tag">Professional Jockeys</div>
+            <h2 class="section-title">签约骑师</h2>
+            <p class="section-desc">专业认证 · 丰富战绩 · 顶级俱乐部背书</p>
+        </div>
+        <div class="jockeys-grid">
+
+            <div class="jockey-card fade-in">
+                <div class="jockey-img-wrapper">
+                    <img src="../../汗血马/骑士1.jpeg" alt="苏晴" class="jockey-img">
+                    <button class="fav-btn" id="fav-suqin" onclick="toggleFavorite('jockey','suqing')">♡</button>
+                </div>
+                <div class="jockey-info">
+                    <h3 class="jockey-name">苏晴
+                        <div class="jockey-price">¥1500/时<span>¥5000/天</span></div>
+                    </h3>
+                    <div class="jockey-club">长春盛世图腾马术俱乐部</div>
+                    <div class="jockey-stats-grid">
+                        <div class="jockey-stat"><div class="jockey-stat-val">312</div><div class="jockey-stat-lbl">参赛场次</div></div>
+                        <div class="jockey-stat"><div class="jockey-stat-val">89</div><div class="jockey-stat-lbl">冠军次数</div></div>
+                        <div class="jockey-stat"><div class="jockey-stat-val">28.5%</div><div class="jockey-stat-lbl">胜率</div></div>
+                    </div>
+                    <div class="jockey-details">
+                        <div class="jockey-detail-row"><span class="jockey-detail-lbl">性别</span><span class="jockey-detail-val">女</span></div>
+                        <div class="jockey-detail-row"><span class="jockey-detail-lbl">年龄</span><span class="jockey-detail-val">28岁</span></div>
+                        <div class="jockey-detail-row"><span class="jockey-detail-lbl">身高</span><span class="jockey-detail-val">162cm</span></div>
+                        <div class="jockey-detail-row"><span class="jockey-detail-lbl">体重</span><span class="jockey-detail-val">52kg</span></div>
+                        <div class="jockey-detail-row"><span class="jockey-detail-lbl">从业</span><span class="jockey-detail-val">9年</span></div>
+                        <div class="jockey-detail-row"><span class="jockey-detail-lbl">擅长</span><span class="jockey-detail-val">速度赛 / 盛装舞步</span></div>
+                    </div>
+                    <div class="jockey-bio">前国家队成员，曾获全国马术锦标赛女子组冠军，擅长与汗血马配合，动作优雅精准。</div>
+                </div>
+            </div>
+
+            <div class="jockey-card fade-in">
+                <div class="jockey-img-wrapper">
+                    <img src="../../汗血马/骑士2.jpeg" alt="陈雨薇" class="jockey-img">
+                    <button class="fav-btn" id="fav-chenyuwei" onclick="toggleFavorite('jockey','chenyuwei')">♡</button>
+                </div>
+                <div class="jockey-info">
+                    <h3 class="jockey-name">陈雨薇
+                        <div class="jockey-price">¥1500/时<span>¥5000/天</span></div>
+                    </h3>
+                    <div class="jockey-club">杭州钱塘马术学院</div>
+                    <div class="jockey-stats-grid">
+                        <div class="jockey-stat"><div class="jockey-stat-val">198</div><div class="jockey-stat-lbl">参赛场次</div></div>
+                        <div class="jockey-stat"><div class="jockey-stat-val">62</div><div class="jockey-stat-lbl">冠军次数</div></div>
+                        <div class="jockey-stat"><div class="jockey-stat-val">31.3%</div><div class="jockey-stat-lbl">胜率</div></div>
+                    </div>
+                    <div class="jockey-details">
+                        <div class="jockey-detail-row"><span class="jockey-detail-lbl">性别</span><span class="jockey-detail-val">女</span></div>
+                        <div class="jockey-detail-row"><span class="jockey-detail-lbl">年龄</span><span class="jockey-detail-val">24岁</span></div>
+                        <div class="jockey-detail-row"><span class="jockey-detail-lbl">身高</span><span class="jockey-detail-val">158cm</span></div>
+                        <div class="jockey-detail-row"><span class="jockey-detail-lbl">体重</span><span class="jockey-detail-val">48kg</span></div>
+                        <div class="jockey-detail-row"><span class="jockey-detail-lbl">从业</span><span class="jockey-detail-val">5年</span></div>
+                        <div class="jockey-detail-row"><span class="jockey-detail-lbl">擅长</span><span class="jockey-detail-val">障碍赛 / 耐力赛</span></div>
+                    </div>
+                    <div class="jockey-bio">新生代潜力骑师，动作敏捷，临场应变能力极强，2024年障碍赛新星杯冠军。</div>
+                </div>
+            </div>
+
+            <div class="jockey-card fade-in">
+                <div class="jockey-img-wrapper">
+                    <img src="../../汗血马/骑士3.jpeg" alt="林梦婷" class="jockey-img">
+                    <button class="fav-btn" id="fav-linmengting" onclick="toggleFavorite('jockey','linmengting')">♡</button>
+                </div>
+                <div class="jockey-info">
+                    <h3 class="jockey-name">林梦婷
+                        <div class="jockey-price">¥1500/时<span>¥5000/天</span></div>
+                    </h3>
+                    <div class="jockey-club">上海外滩马术中心</div>
+                    <div class="jockey-stats-grid">
+                        <div class="jockey-stat"><div class="jockey-stat-val">421</div><div class="jockey-stat-lbl">参赛场次</div></div>
+                        <div class="jockey-stat"><div class="jockey-stat-val">134</div><div class="jockey-stat-lbl">冠军次数</div></div>
+                        <div class="jockey-stat"><div class="jockey-stat-val">31.8%</div><div class="jockey-stat-lbl">胜率</div></div>
+                    </div>
+                    <div class="jockey-details">
+                        <div class="jockey-detail-row"><span class="jockey-detail-lbl">性别</span><span class="jockey-detail-val">女</span></div>
+                        <div class="jockey-detail-row"><span class="jockey-detail-lbl">年龄</span><span class="jockey-detail-val">31岁</span></div>
+                        <div class="jockey-detail-row"><span class="jockey-detail-lbl">身高</span><span class="jockey-detail-val">160cm</span></div>
+                        <div class="jockey-detail-row"><span class="jockey-detail-lbl">体重</span><span class="jockey-detail-val">50kg</span></div>
+                        <div class="jockey-detail-row"><span class="jockey-detail-lbl">从业</span><span class="jockey-detail-val">11年</span></div>
+                        <div class="jockey-detail-row"><span class="jockey-detail-lbl">擅长</span><span class="jockey-detail-val">速度赛 / 专业培训</span></div>
+                    </div>
+                    <div class="jockey-bio">从业十余年，业界资深导师级骑师，培养多名新秀。胜率稳定在31%以上，业内标杆。</div>
+                </div>
+            </div>
+
+            <div class="jockey-card fade-in">
+                <div class="jockey-img-wrapper">
+                    <img src="../../汗血马/骑士4.jpeg" alt="赵子龙" class="jockey-img">
+                    <button class="fav-btn" id="fav-zhaozilong" onclick="toggleFavorite('jockey','zhaozilong')">♡</button>
+                </div>
+                <div class="jockey-info">
+                    <h3 class="jockey-name">赵子龙
+                        <div class="jockey-price">¥1500/时<span>¥5000/天</span></div>
+                    </h3>
+                    <div class="jockey-club">北京京华马术俱乐部</div>
+                    <div class="jockey-stats-grid">
+                        <div class="jockey-stat"><div class="jockey-stat-val">567</div><div class="jockey-stat-lbl">参赛场次</div></div>
+                        <div class="jockey-stat"><div class="jockey-stat-val">201</div><div class="jockey-stat-lbl">冠军次数</div></div>
+                        <div class="jockey-stat"><div class="jockey-stat-val">35.5%</div><div class="jockey-stat-lbl">胜率</div></div>
+                    </div>
+                    <div class="jockey-details">
+                        <div class="jockey-detail-row"><span class="jockey-detail-lbl">性别</span><span class="jockey-detail-val">男</span></div>
+                        <div class="jockey-detail-row"><span class="jockey-detail-lbl">年龄</span><span class="jockey-detail-val">35岁</span></div>
+                        <div class="jockey-detail-row"><span class="jockey-detail-lbl">身高</span><span class="jockey-detail-val">175cm</span></div>
+                        <div class="jockey-detail-row"><span class="jockey-detail-lbl">体重</span><span class="jockey-detail-val">68kg</span></div>
+                        <div class="jockey-detail-row"><span class="jockey-detail-lbl">从业</span><span class="jockey-detail-val">14年</span></div>
+                        <div class="jockey-detail-row"><span class="jockey-detail-lbl">擅长</span><span class="jockey-detail-val">速度赛 / 马匹调驯</span></div>
+                    </div>
+                    <div class="jockey-bio">中国马术界传奇人物，汗血马速度赛纪录保持者，业内公认的"马王调教师"。</div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+
+    <!-- 血统图谱 -->
+    <section class="bloodline" id="bloodline">
+        <div class="section-header">
+            <div class="section-tag">Bloodline Heritage</div>
+            <h2 class="section-title">三代血统图谱</h2>
+            <p class="section-desc">每一匹名马的血统都可追溯，优秀的基因是汗血马价值的核心</p>
+        </div>
+        <div class="bloodline-chart fade-in">
+            <div class="bloodline-node">
+                <div class="bloodline-node-name">祖父 · 风暴之子</div>
+                <div class="bloodline-node-title">2008 国际赛冠军</div>
+            </div>
+            <div class="bloodline-arrow">→</div>
+            <div class="bloodline-node">
+                <div class="bloodline-node-name">父亲 · 沙漠王子</div>
+                <div class="bloodline-node-title">2015 土库曼国家冠军</div>
+            </div>
+            <div class="bloodline-arrow">→</div>
+            <div class="bloodline-node highlight">
+                <div class="bloodline-node-name">金色风暴</div>
+                <div class="bloodline-node-title">在售 · 6岁</div>
+            </div>
+            <div class="bloodline-arrow">→</div>
+            <div class="bloodline-node">
+                <div class="bloodline-node-name">母亲 · 银月</div>
+                <div class="bloodline-node-title">2012 繁育冠军</div>
+            </div>
+            <div class="bloodline-arrow">→</div>
+            <div class="bloodline-node">
+                <div class="bloodline-node-name">外祖父 · 战神</div>
+                <div class="bloodline-node-title">2006 迪拜杯冠军</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 信任背书 -->
+    <section class="trust-section">
+        <div class="trust-container">
+            <div class="section-title">
+                <div class="section-tag">TRUST & CREDENTIALS</div>
+                <h2 class="section-main-title">权威认证 · 品质保障</h2>
+            </div>
+            <div class="trust-grid">
+                <div class="trust-item">
+                    <div class="trust-icon">🏛️</div>
+                    <div class="trust-title">政府认证</div>
+                    <div class="trust-desc">获得土库曼斯坦国家马业协会认证，中国马术协会官方合作平台</div>
+                </div>
+                <div class="trust-item">
+                    <div class="trust-icon">🔐</div>
+                    <div class="trust-title">区块链确权</div>
+                    <div class="trust-desc">每匹马配备唯一芯片号，区块链技术确保产权信息不可篡改</div>
+                </div>
+                <div class="trust-item">
+                    <div class="trust-icon">🏥</div>
+                    <div class="trust-title">健康保障</div>
+                    <div class="trust-desc">权威兽医团队定期体检，专业马医院全程健康监护</div>
+                </div>
+                <div class="trust-item">
+                    <div class="trust-icon">🤝</div>
+                    <div class="trust-title">安全交易</div>
+                    <div class="trust-desc">资金由第三方托管，产权过户完成后才放款，保障双方权益</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 购马流程 -->
+    <section class="process-section">
+        <div class="process-container">
+            <div class="section-title">
+                <div class="section-tag">HOW IT WORKS</div>
+                <h2 class="section-main-title">服务流程</h2>
+            </div>
+            <div class="process-steps">
+                <div class="process-step">
+                    <div class="process-num">01</div>
+                    <div class="process-icon">🔍</div>
+                    <div class="process-title">预约鉴赏</div>
+                    <div class="process-desc">联系专属顾问，预约前往马场鉴赏心仪的汗血马</div>
+                </div>
+                <div class="process-arrow">→</div>
+                <div class="process-step">
+                    <div class="process-num">02</div>
+                    <div class="process-icon">🏛️</div>
+                    <div class="process-title">产权确认</div>
+                    <div class="process-desc">核对区块链确权档案，确认马匹身份与产权归属</div>
+                </div>
+                <div class="process-arrow">→</div>
+                <div class="process-step">
+                    <div class="process-num">03</div>
+                    <div class="process-icon">📋</div>
+                    <div class="process-title">签订协议</div>
+                    <div class="process-desc">签署产权转让协议，资金由第三方托管保障安全</div>
+                </div>
+                <div class="process-arrow">→</div>
+                <div class="process-step">
+                    <div class="process-num">04</div>
+                    <div class="process-icon">🐎</div>
+                    <div class="process-title">交付马匹</div>
+                    <div class="process-desc">完成过户后，专业的马匹运输团队护送马匹到位</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 常见问题 -->
+    <section class="faq-section">
+        <div class="faq-container">
+            <div class="section-title">
+                <div class="section-tag">FAQ</div>
+                <h2 class="section-main-title">常见问题</h2>
+            </div>
+            <div class="faq-grid">
+                <div class="faq-item">
+                    <div class="faq-q">汗血马的饲养成本是多少？</div>
+                    <div class="faq-a">汗血马属于高端马种，每月的饲养成本约在 8,000-15,000 元之间，包含高品质饲料、专业马厩、兽医护理等。我们可提供合作的马厩托管服务。</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-q">马匹运输如何保障安全？</div>
+                    <div class="faq-a">我们与专业马匹运输公司合作，提供空调马房车运输，全程有兽医陪同。运输前会进行健康检查，确保马匹状态适合运输。</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-q">区块链确权有什么用？</div>
+                    <div class="faq-a">每匹汗血马配有唯一芯片号，其血统、健康、交易记录均上链存储。产权转让时生成数字凭证，无法伪造，确保您拥有真正的产权。</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-q">购买后可以退换吗？</div>
+                    <div class="faq-a">由于马匹的特殊性，一经完成产权过户不予退换。但我们会在交付前进行充分沟通，确保您对马匹有充分了解。</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-q">可以先寄养在马场吗？</div>
+                    <div class="faq-a">可以的。我们提供马厩托管服务，您可以将马匹寄养在盛世图腾马场，由专业团队照料，您随时可以探望。</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-q">如何验证马匹血统？</div>
+                    <div class="faq-a">您可以要求查看马匹的血统证书原件，并通过芯片号在我们的平台上查询区块链存证的血统档案，对比验证。</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 联系我们 -->
+    <section class="contact-section">
+        <div class="contact-container">
+            <div class="section-title">
+                <div class="section-tag">CONTACT US</div>
+                <h2 class="section-main-title">联系我们</h2>
+            </div>
+            <div class="contact-grid">
+                <div class="contact-item">
+                    <div class="contact-icon">📞</div>
+                    <div class="contact-label">咨询热线</div>
+                    <div class="contact-value">400-888-9999</div>
+                    <div class="contact-note">工作日 9:00 - 18:00</div>
+                </div>
+                <div class="contact-item">
+                    <div class="contact-icon">💬</div>
+                    <div class="contact-label">官方微信</div>
+                    <div class="contact-value">AKHAL-TEKE</div>
+                    <div class="contact-note">添加备注"汗血马咨询"</div>
+                </div>
+                <div class="contact-item">
+                    <div class="contact-icon">📧</div>
+                    <div class="contact-label">电子邮箱</div>
+                    <div class="contact-value">contact@akhal-teke.com</div>
+                    <div class="contact-note">24小时内回复</div>
+                </div>
+                <div class="contact-item">
+                    <div class="contact-icon">📍</div>
+                    <div class="contact-label">马场地址</div>
+                    <div class="contact-value">吉林省长春市绿园区</div>
+                    <div class="contact-note">盛世图腾汗血马繁育中心</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer id="about">
+        <div class="footer-logo">AKHAL-TEKE</div>
+        <div class="footer-links">
+            <a href="#">关于平台</a>
+            <a href="#">联系我们</a>
+            <a href="#">隐私条款</a>
+            <a href="#">服务协议</a>
+        </div>
+        <p class="footer-copy">© 2026 Akhal-Teke Digital Heritage. All Rights Reserved.</p>
+    </footer>
+
+    <!-- 贵宾中心 -->
+    <div class="vip-overlay" id="vipOverlay">
+        <button class="vip-close" onclick="closeVipCenter()">✕</button>
+        <div class="vip-container">
+            <div class="vip-header">
+                <div class="vip-title">贵宾中心</div>
+                <div class="vip-sub">MEMBER CENTER</div>
+                <button class="vip-logout" onclick="logout()">退出登录</button>
+            </div>
+            <div class="vip-tabs">
+                <button class="vip-tab active" onclick="switchVipTab(this, 'vip-fav')">我的收藏</button>
+                <button class="vip-tab" onclick="switchVipTab(this, 'vip-keys')">密钥管理</button>
+            </div>
+
+            <!-- 收藏 -->
+            <div id="vip-fav" class="vip-tab-content active">
+                <div class="fav-section-title">已收藏的马匹</div>
+                <div class="fav-grid" id="favHorses"></div>
+                <div class="fav-section-title">已收藏的骑师</div>
+                <div class="fav-grid" id="favJockeys"></div>
+            </div>
+
+            <!-- 密钥管理 -->
+            <div id="vip-keys" class="vip-tab-content">
+                <div class="key-limit-info" id="keyLimitInfo">已生成 0/10 个密钥</div>
+
+                <!-- 生成密钥表单 -->
+                <div class="key-form-box" id="keyFormBox">
+                    <div class="key-form-title">填写客户信息</div>
+                    <div class="key-form-grid">
+                        <div class="key-form-field">
+                            <label>姓名 <span class="required">*</span></label>
+                            <input type="text" id="kf-name" placeholder="请输入姓名">
+                        </div>
+                        <div class="key-form-field">
+                            <label>年龄 <span class="required">*</span></label>
+                            <input type="text" id="kf-age" placeholder="请输入年龄">
+                        </div>
+                        <div class="key-form-field">
+                            <label>性别 <span class="required">*</span></label>
+                            <select id="kf-gender">
+                                <option value="">请选择</option>
+                                <option value="男">男</option>
+                                <option value="女">女</option>
+                            </select>
+                        </div>
+                        <div class="key-form-field">
+                            <label>从事职业 <span class="required">*</span></label>
+                            <input type="text" id="kf-job" placeholder="请输入职业">
+                        </div>
+                        <div class="key-form-field">
+                            <label>是否拥有马匹 <span class="required">*</span></label>
+                            <select id="kf-hashorse">
+                                <option value="">请选择</option>
+                                <option value="是">是</option>
+                                <option value="否">否</option>
+                            </select>
+                        </div>
+                        <div class="key-form-field full-width">
+                            <label>拥有马匹介绍 <span class="required">*</span></label>
+                            <textarea id="kf-horseinfo" rows="3" placeholder="请介绍马匹情况"></textarea>
+                        </div>
+                    </div>
+                    <div class="key-form-actions">
+                        <button class="key-form-cancel" onclick="hideKeyForm()">取消</button>
+                        <button class="key-form-submit" id="vipGenKeyBtn" onclick="vipGenKey()">生成邀请密钥</button>
+                    </div>
+                </div>
+
+                <!-- 显示生成结果 -->
+                <div class="key-result-box" id="keyResultBox" style="display:none">
+                    <div class="key-result-label">生成的邀请密钥</div>
+                    <div class="key-result-code" id="keyResultCode"></div>
+                    <div class="key-result-name" id="keyResultName"></div>
+                    <div class="key-result-actions">
+                        <button class="key-copy-btn" id="keyResultCopyBtn" onclick="copyKeyResult()">复制密钥</button>
+                        <button class="key-new-btn" onclick="showKeyForm()">继续生成</button>
+                    </div>
+                </div>
+
+                <div class="key-list" id="vipKeyList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 导航滚动效果
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 100) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // 滚动动画
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in').forEach(el => {
+            observer.observe(el);
+        });
+
+        // 邀请码提交
+        function handleInviteSubmit(e) {
+            e.preventDefault();
+            const input = e.target.querySelector('input');
+            const code = input.value.trim();
+            if (code) {
+                alert('邀请码验证中，请稍候...\n(演示模式)');
+            } else {
+                alert('请输入邀请码');
+            }
+        }
+
+        // 马匹详细资料数据
+        const horseData = {
+            yulong: {
+                name: '玉龙驹',
+                chip: 'SST-AK-2021-001',
+                status: '待售',
+                statusClass: 'status-sale',
+                price: '¥ 1.5 亿',
+                location: '长春',
+                gender: '雄',
+                age: '5岁',
+                color: '白色',
+                height: '163cm',
+                weight: '475kg',
+                owner: null,
+                health: {
+                    lastCheck: '2026-03-15',
+                    heartRate: '38次/分 · 正常',
+                    temperature: '37.8°C · 正常',
+                    appetite: '良好',
+                    weightTrend: '稳定',
+                    nextCheck: '2026-04-20'
+                },
+                photos: ['../../汗血马/玉龙驹.mp4','../../汗血马/玉龙驹.mp4','../../汗血马/玉龙驹.mp4','../../汗血马/玉龙驹.mp4','../../汗血马/玉龙驹.mp4','../../汗血马/玉龙驹.mp4','../../汗血马/玉龙驹.mp4','../../汗血马/玉龙驹.mp4','../../汗血马/玉龙驹.mp4','../../汗血马/玉龙驹.mp4'],
+                videos: [
+                    {label: '行走姿态', src: '../../汗血马/玉龙驹.mp4'},
+                    {label: '奔跑展示', src: '../../汗血马/玉龙驹.mp4'},
+                    {label: '日常喂养', src: '../../汗血马/玉龙驹.mp4'}
+                ],
+                bloodline: {
+                    father: {name: '父亲', title: '2018土库曼国家冠军', chip: 'SST-AK-2015-001'},
+                    mother: {name: '母亲', title: '2016繁育大赛冠军', chip: 'SST-AK-2016-002'},
+                    gf: {name: '祖父', title: '2008国际赛冠军', chip: 'SST-AK-2005-001'},
+                    gm: {name: '祖母', title: '血统认证A级', chip: 'SST-AK-2006-002'},
+                    gf2: {name: '外祖父', title: '2005迪拜杯冠军', chip: 'SST-AK-2002-003'},
+                    gm2: {name: '外祖母', title: '繁育认证B级', chip: 'SST-AK-2004-004'}
+                },
+                transactions: [
+                    {date: '2021-03-12', type: '出生登记', from: '—', to: '盛世图腾马场'},
+                    {date: '2026-01-08', type: '进入平台', from: '盛世图腾马场', to: '待售'}
+                ],
+                awards: [
+                    {year: '2023', title: '全国马术耐力赛冠军', org: '中国马术协会'},
+                    {year: '2024', title: '汗血马速度赛年度冠军', org: '国际汗血马协会'}
+                ]
+            },
+            chitu: {
+                name: '赤兔',
+                chip: 'SST-AK-2018-002',
+                status: '配种中',
+                statusClass: 'status-breeding',
+                price: '¥ 200 万/年',
+                location: '杭州',
+                gender: '雄',
+                age: '7岁',
+                color: '赤褐色',
+                height: '160cm',
+                weight: '468kg',
+                owner: null,
+                health: {
+                    lastCheck: '2026-02-28',
+                    heartRate: '36次/分 · 正常',
+                    temperature: '37.6°C · 正常',
+                    appetite: '良好',
+                    weightTrend: '略有上升',
+                    nextCheck: '2026-04-15'
+                },
+                photos: ['../../汗血马/赤兔.mp4','../../汗血马/赤兔.mp4','../../汗血马/赤兔.mp4','../../汗血马/赤兔.mp4','../../汗血马/赤兔.mp4','../../汗血马/赤兔.mp4','../../汗血马/赤兔.mp4','../../汗血马/赤兔.mp4','../../汗血马/赤兔.mp4','../../汗血马/赤兔.mp4'],
+                videos: [
+                    {label: '行走姿态', src: '../../汗血马/赤兔.mp4'},
+                    {label: '奔跑展示', src: '../../汗血马/赤兔.mp4'},
+                    {label: '日常喂养', src: '../../汗血马/赤兔.mp4'}
+                ],
+                bloodline: {
+                    father: {name: '父亲', title: '2012国际赛冠军', chip: 'SST-AK-2009-002'},
+                    mother: {name: '母亲', title: '2014繁育冠军', chip: 'SST-AK-2011-003'},
+                    gf: {name: '祖父', title: '2006迪拜杯冠军', chip: 'SST-AK-2003-001'},
+                    gm: {name: '祖母', title: '血统认证A级', chip: 'SST-AK-2004-002'},
+                    gf2: {name: '外祖父', title: '2008亚运会冠军', chip: 'SST-AK-2005-003'},
+                    gm2: {name: '外祖母', title: '繁育认证B级', chip: 'SST-AK-2007-004'}
+                },
+                transactions: [
+                    {date: '2018-05-20', type: '出生登记', from: '—', to: '杭州汗血马繁育中心'},
+                    {date: '2022-06-01', type: '配种开放', from: '杭州汗血马繁育中心', to: '配种中'}
+                ],
+                awards: [
+                    {year: '2021', title: '配种冠军后代', org: '国家马匹繁育中心'}
+                ]
+            },
+            jiangjun: {
+                name: '将军',
+                chip: 'SST-AK-2019-003',
+                status: '有主',
+                statusClass: 'status-owned',
+                price: '估值 ¥ 4,200 万',
+                location: '杭州',
+                gender: '雄',
+                age: '9岁',
+                color: '黑色',
+                height: '168cm',
+                weight: '520kg',
+                owner: '马云',
+                ownerStory: '马云与将军的相遇源于一次偶然的马术体验。2019年深秋，马云在杭州观看了一场汗血马表演，将军以其矫健的身姿和沉稳的气质深深吸引了他。从此，马云便常来马场探望将军，并逐渐学习马术。他说："将军不只是一匹马，更是我在喧嚣商海中的宁静港湾。"如今，每逢清晨，马云都会亲自喂养将军，这已成为他多年如一日的习惯。',
+                health: {
+                    lastCheck: '2026-03-01',
+                    heartRate: '35次/分 · 正常',
+                    temperature: '37.7°C · 正常',
+                    appetite: '极佳',
+                    weightTrend: '稳定',
+                    nextCheck: '2026-05-01'
+                },
+                photos: ['../../汗血马/将军.mp4','../../汗血马/将军.mp4','../../汗血马/将军.mp4','../../汗血马/将军.mp4','../../汗血马/将军.mp4','../../汗血马/将军.mp4','../../汗血马/将军.mp4','../../汗血马/将军.mp4','../../汗血马/将军.mp4','../../汗血马/将军.mp4'],
+                videos: [
+                    {label: '行走姿态', src: '../../汗血马/将军.mp4'},
+                    {label: '奔跑展示', src: '../../汗血马/将军.mp4'},
+                    {label: '日常训练', src: '../../汗血马/将军.mp4'}
+                ],
+                bloodline: {
+                    father: {name: '父亲', title: '2010世界冠军', chip: 'SST-AK-2007-003'},
+                    mother: {name: '母亲', title: '2013繁育冠军', chip: 'SST-AK-2010-004'},
+                    gf: {name: '祖父', title: '2004雅典奥运会冠军', chip: 'SST-AK-2001-001'},
+                    gm: {name: '祖母', title: '血统认证S级', chip: 'SST-AK-2002-002'},
+                    gf2: {name: '外祖父', title: '2007欧洲杯冠军', chip: 'SST-AK-2004-003'},
+                    gm2: {name: '外祖母', title: '繁育认证A级', chip: 'SST-AK-2006-004'}
+                },
+                transactions: [
+                    {date: '2019-08-15', type: '出生登记', from: '—', to: '杭州汗血马繁育中心'},
+                    {date: '2023-11-20', type: '产权转让', from: '杭州汗血马繁育中心', to: '马云'}
+                ],
+                awards: [
+                    {year: '2022', title: '汗血马锦标赛第三名', org: '中国马术协会'},
+                    {year: '2023', title: '速度赛铜牌', org: '亚洲马术联合会'}
+                ]
+            },
+            lieyan: {
+                name: '烈焰',
+                chip: 'SST-AK-2020-004',
+                status: '配种中',
+                statusClass: 'status-breeding',
+                price: '¥ 180 万/年',
+                location: '长春',
+                gender: '雄',
+                age: '5岁',
+                color: '火红色',
+                height: '164cm',
+                weight: '490kg',
+                owner: '傅园慧',
+                ownerStory: '傅园慧与烈焰的缘分始于一次马术疗愈之旅。作为前游泳冠军，傅园慧在退役后曾一度迷茫，直到遇见了这匹火红色的烈焰。"第一次看到烈焰奔跑的样子，就像看到了自己当年冲破水面的瞬间。"傅园慧说。如今，烈焰不仅是她的精神伙伴，也成为了她推广马术运动的代言人。每周她都会带着烈焰参加公益马术活动，希望能激励更多年轻人找到自己的热爱。',
+                health: {
+                    lastCheck: '2026-03-20',
+                    heartRate: '37次/分 · 正常',
+                    temperature: '37.9°C · 正常',
+                    appetite: '良好',
+                    weightTrend: '稳定',
+                    nextCheck: '2026-04-25'
+                },
+                photos: ['../../汗血马/烈焰.mp4','../../汗血马/烈焰.mp4','../../汗血马/烈焰.mp4','../../汗血马/烈焰.mp4','../../汗血马/烈焰.mp4','../../汗血马/烈焰.mp4','../../汗血马/烈焰.mp4','../../汗血马/烈焰.mp4','../../汗血马/烈焰.mp4','../../汗血马/烈焰.mp4'],
+                videos: [
+                    {label: '行走姿态', src: '../../汗血马/烈焰.mp4'},
+                    {label: '奔跑展示', src: '../../汗血马/烈焰.mp4'},
+                    {label: '日常喂养', src: '../../汗血马/烈焰.mp4'}
+                ],
+                bloodline: {
+                    father: {name: '父亲', title: '2016国家冠军', chip: 'SST-AK-2013-004'},
+                    mother: {name: '母亲', title: '2018繁育冠军', chip: 'SST-AK-2015-005'},
+                    gf: {name: '祖父', title: '2008国际赛冠军', chip: 'SST-AK-2005-001'},
+                    gm: {name: '祖母', title: '血统认证A级', chip: 'SST-AK-2006-002'},
+                    gf2: {name: '外祖父', title: '2009亚洲杯冠军', chip: 'SST-AK-2006-003'},
+                    gm2: {name: '外祖母', title: '繁育认证B级', chip: 'SST-AK-2008-004'}
+                },
+                transactions: [
+                    {date: '2020-04-10', type: '出生登记', from: '—', to: '长春盛世图腾马场'},
+                    {date: '2024-07-15', type: '配种开放', from: '长春盛世图腾马场', to: '配种中'},
+                    {date: '2025-12-01', type: '产权持有', from: '长春盛世图腾马场', to: '傅园慧'}
+                ],
+                awards: [
+                    {year: '2023', title: '繁育潜力新星奖', org: '国际汗血马协会'}
+                ]
+            },
+            hanbaiyu: {
+                name: '汉白玉',
+                chip: 'SST-AK-2021-005',
+                status: '有主',
+                statusClass: 'status-owned',
+                price: '成交价 ¥ 2,100 万',
+                location: '杭州',
+                gender: '雌',
+                age: '4岁',
+                color: '白色',
+                height: '162cm',
+                weight: '472kg',
+                owner: '赵薇',
+                ownerStory: '赵薇与汉白玉的相识是一场美丽的意外。2023年的一次电影拍摄中，赵薇需要与马匹有亲密互动，汉白玉以其温顺的性格和洁白无瑕的外表深深打动了她。"汉白玉就像我演艺生涯中的一位知己，陪伴我度过了许多难忘的时光。"赵薇如是说。如今，汉白玉已成为赵薇庄园中最受珍视的成员，她还特意为汉白玉修建了专属的马厩。',
+                health: {
+                    lastCheck: '2026-02-10',
+                    heartRate: '36次/分 · 正常',
+                    temperature: '37.8°C · 正常',
+                    appetite: '良好',
+                    weightTrend: '略有上升',
+                    nextCheck: '2026-05-10'
+                },
+                photos: ['../../汗血马/汉白玉.mp4','../../汗血马/汉白玉.mp4','../../汗血马/汉白玉.mp4','../../汗血马/汉白玉.mp4','../../汗血马/汉白玉.mp4','../../汗血马/汉白玉.mp4','../../汗血马/汉白玉.mp4','../../汗血马/汉白玉.mp4','../../汗血马/汉白玉.mp4','../../汗血马/汉白玉.mp4'],
+                videos: [
+                    {label: '行走姿态', src: '../../汗血马/汉白玉.mp4'},
+                    {label: '奔跑展示', src: '../../汗血马/汉白玉.mp4'},
+                    {label: '日常训练', src: '../../汗血马/汉白玉.mp4'}
+                ],
+                bloodline: {
+                    father: {name: '父亲', title: '2017世界冠军', chip: 'SST-AK-2014-005'},
+                    mother: {name: '母亲', title: '2019繁育冠军', chip: 'SST-AK-2016-006'},
+                    gf: {name: '祖父', title: '2009欧洲杯冠军', chip: 'SST-AK-2006-004'},
+                    gm: {name: '祖母', title: '血统认证S级', chip: 'SST-AK-2007-005'},
+                    gf2: {name: '外祖父', title: '2011亚运会冠军', chip: 'SST-AK-2008-005'},
+                    gm2: {name: '外祖母', title: '繁育认证A级', chip: 'SST-AK-2010-006'}
+                },
+                transactions: [
+                    {date: '2021-06-18', type: '出生登记', from: '—', to: '杭州汗血马繁育中心'},
+                    {date: '2025-09-30', type: '产权转让', from: '杭州汗血马繁育中心', to: '赵薇'}
+                ],
+                awards: [
+                    {year: '2024', title: '最佳气质奖', org: '全国马术展'}
+                ]
+            },
+            heifeng: {
+                name: '黑风',
+                chip: 'SST-AK-2016-006',
+                status: '待售',
+                statusClass: 'status-sale',
+                price: '¥ 1,600 万',
+                location: '长春',
+                gender: '雄',
+                age: '9岁',
+                color: '黑色',
+                height: '167cm',
+                weight: '505kg',
+                owner: null,
+                health: {
+                    lastCheck: '2026-03-05',
+                    heartRate: '34次/分 · 正常',
+                    temperature: '37.6°C · 正常',
+                    appetite: '良好',
+                    weightTrend: '稳定',
+                    nextCheck: '2026-04-30'
+                },
+                photos: ['../../汗血马/黑风.mp4','../../汗血马/黑风.mp4','../../汗血马/黑风.mp4','../../汗血马/黑风.mp4','../../汗血马/黑风.mp4','../../汗血马/黑风.mp4','../../汗血马/黑风.mp4','../../汗血马/黑风.mp4','../../汗血马/黑风.mp4','../../汗血马/黑风.mp4'],
+                videos: [
+                    {label: '行走姿态', src: '../../汗血马/黑风.mp4'},
+                    {label: '奔跑展示', src: '../../汗血马/黑风.mp4'},
+                    {label: '日常训练', src: '../../汗血马/黑风.mp4'}
+                ],
+                bloodline: {
+                    father: {name: '父亲', title: '2010国际赛冠军', chip: 'SST-AK-2007-006'},
+                    mother: {name: '母亲', title: '2012繁育冠军', chip: 'SST-AK-2009-007'},
+                    gf: {name: '祖父', title: '2002世界冠军', chip: 'SST-AK-1999-001'},
+                    gm: {name: '祖母', title: '血统认证S级', chip: 'SST-AK-2000-002'},
+                    gf2: {name: '外祖父', title: '2005迪拜杯冠军', chip: 'SST-AK-2002-004'},
+                    gm2: {name: '外祖母', title: '繁育认证A级', chip: 'SST-AK-2004-005'}
+                },
+                transactions: [
+                    {date: '2016-03-22', type: '出生登记', from: '—', to: '长春盛世图腾马场'},
+                    {date: '2026-02-14', type: '进入平台', from: '长春盛世图腾马场', to: '待售'}
+                ]
+            }
+        };
+
+        // 骑师数据
+        const jockeyData = {
+            suqing: {
+                name: '苏晴',
+                club: '长春盛世图腾马术俱乐部',
+                img: '../../汗血马/骑士1.jpeg',
+                gender: '女',
+                age: '28岁',
+                height: '162cm',
+                weight: '52kg',
+                exp: '9年',
+                skill: '速度赛 / 盛装舞步',
+                bio: '前国家队成员，曾获全国马术锦标赛女子组冠军，擅长与汗血马配合，动作优雅精准。'
+            },
+            chenyuwei: {
+                name: '陈雨薇',
+                club: '杭州钱塘马术学院',
+                img: '../../汗血马/骑士2.jpeg',
+                gender: '女',
+                age: '24岁',
+                height: '158cm',
+                weight: '48kg',
+                exp: '5年',
+                skill: '障碍赛 / 耐力赛',
+                bio: '新生代潜力骑师，动作敏捷，临场应变能力极强，2024年障碍赛新星杯冠军。'
+            },
+            linmengting: {
+                name: '林梦婷',
+                club: '上海外滩马术中心',
+                img: '../../汗血马/骑士3.jpeg',
+                gender: '女',
+                age: '31岁',
+                height: '160cm',
+                weight: '50kg',
+                exp: '11年',
+                skill: '速度赛 / 专业培训',
+                bio: '从业十余年，业界资深导师级骑师，培养多名新秀。胜率稳定在31%以上，业内标杆。'
+            },
+            zhaozilong: {
+                name: '赵子龙',
+                club: '北京京华马术俱乐部',
+                img: '../../汗血马/骑士4.jpeg',
+                gender: '男',
+                age: '35岁',
+                height: '175cm',
+                weight: '68kg',
+                exp: '14年',
+                skill: '速度赛 / 马匹调驯',
+                bio: '中国马术界传奇人物，汗血马速度赛纪录保持者，业内公认的"马王调教师"。'
+            }
+        };
+
+        function openDetail(id) {
+            const d = horseData[id];
+            const modal = document.getElementById('horseModal');
+            const content = document.getElementById('modalContent');
+
+            let statusLabel = d.status;
+            let statusStyle = '';
+            if (d.statusClass === 'status-sale') statusStyle = 'color:#C9A96E';
+            else if (d.statusClass === 'status-breeding') statusStyle = 'color:#7cb87c';
+            else statusStyle = 'color:#888';
+
+            let ownerHtml = '';
+            if (d.owner) {
+                ownerHtml = `<div class="modal-info-item"><span class="modal-info-label">主人</span><span class="modal-info-value">${d.owner}</span></div>`;
+            }
+
+            let photosHtml = '';
+            d.photos.forEach((src, i) => {
+                const cls = i === 0 ? 'photo-thumb photo-thumb-main' : 'photo-thumb';
+                // 相册展示静态图片，视频在视频标签页查看
+                photosHtml += `<div class="${cls}"><img src="${src}" alt="照片${i+1}" onerror="this.style.display='none'"></div>`;
+            });
+
+            let videosHtml = '';
+            d.videos.forEach((v, i) => {
+                const active = i === 0 ? 'active' : '';
+                videosHtml += `<div class="video-thumb-item ${active}" onclick="switchVideo(this, '${v.src}', '${v.label}', '${id}')"><video src="${v.src}" muted preload="metadata"></video><span class="video-thumb-label">${v.label}</span></div>`;
+            });
+            let featuredVideo = d.videos[0] ? d.videos[0] : d.videos;
+            let mainVideosHtml = `<div class="video-featured"><video id="mainVideo-${id}" src="${featuredVideo.src}" controls preload="metadata"></video><div class="video-featured-label">${featuredVideo.label}</div></div>`;
+
+            let transactionsHtml = '';
+            d.transactions.forEach(t => {
+                transactionsHtml += `<tr><td>${t.date}</td><td>${t.type}</td><td>${t.from}</td><td>${t.to}</td></tr>`;
+            });
+
+            let awardsHtml = '';
+            if (d.awards && d.awards.length > 0) {
+                d.awards.forEach(a => {
+                    awardsHtml += `<div class="award-item">
+                        <div class="award-year">${a.year}</div>
+                        <div class="award-content">
+                            <div class="award-title">${a.title}</div>
+                            <div class="award-org">${a.org}</div>
+                        </div>
+                    </div>`;
+                });
+            } else {
+                awardsHtml = '<div class="no-awards">暂无竞赛记录</div>';
+            }
+
+            content.innerHTML = `
+                <div class="modal-header">
+                    <h2 class="modal-title">${d.name}</h2>
+                    <div class="modal-chip">芯片号：${d.chip}</div>
+                    <div class="modal-owner-info">
+                        <div class="modal-info-item"><span class="modal-info-label">状态</span><span class="modal-info-value" style="${statusStyle}">${statusLabel}</span></div>
+                        <div class="modal-info-item"><span class="modal-info-label">价格</span><span class="modal-info-value" style="color:#C9A96E">${d.price}</span></div>
+                        <div class="modal-info-item"><span class="modal-info-label">所在地</span><span class="modal-info-value">${d.location}</span></div>
+                        <div class="modal-info-item"><span class="modal-info-label">性别</span><span class="modal-info-value">${d.gender}</span></div>
+                        <div class="modal-info-item"><span class="modal-info-label">年龄</span><span class="modal-info-value">${d.age}</span></div>
+                        <div class="modal-info-item"><span class="modal-info-label">毛色</span><span class="modal-info-value">${d.color}</span></div>
+                        <div class="modal-info-item"><span class="modal-info-label">身高</span><span class="modal-info-value">${d.height}</span></div>
+                        <div class="modal-info-item"><span class="modal-info-label">体重</span><span class="modal-info-value">${d.weight}</span></div>
+                        ${ownerHtml}
+                    </div>
+                </div>
+
+                <div class="modal-tabs">
+                    <button class="modal-tab active" onclick="switchTab(this, 'tab-photo')">高清相册</button>
+                    <button class="modal-tab" onclick="switchTab(this, 'tab-video')">动态视频</button>
+                    <button class="modal-tab" onclick="switchTab(this, 'tab-awards')">竞赛成绩</button>
+                    <button class="modal-tab" onclick="switchTab(this, 'tab-bloodline')">血统证书</button>
+                    <button class="modal-tab" onclick="switchTab(this, 'tab-health')">健康档案</button>
+                    <button class="modal-tab" onclick="switchTab(this, 'tab-download')">资料下载</button>
+                </div>
+
+                <div id="tab-photo" class="modal-tab-content active">
+                    <div class="photo-gallery">${photosHtml}</div>
+                </div>
+
+                <div id="tab-video" class="modal-tab-content">
+                    <div class="video-grid">
+                        ${mainVideosHtml}
+                        <div class="video-thumb-list">${videosHtml}</div>
+                    </div>
+                </div>
+
+                <div id="tab-awards" class="modal-tab-content">
+                    <div class="awards-list">${awardsHtml}</div>
+                </div>
+
+                <div id="tab-bloodline" class="modal-tab-content">
+                    <div class="bloodline-cert">
+                        <h4>三代血统证书</h4>
+                        <div class="bloodline-tree">
+                            <div class="bloodline-gen">
+                                <div class="bloodline-parent-col">
+                                    <div class="bloodline-label">父系</div>
+                                    <div class="bloodline-node-detail">
+                                        <div class="bn-name">${d.bloodline.gf.name}</div>
+                                        <div class="bn-title">${d.bloodline.gf.title}</div>
+                                        <div class="bn-chip">${d.bloodline.gf.chip}</div>
+                                    </div>
+                                </div>
+                                <div class="bloodline-parent-col">
+                                    <div class="bloodline-label">母系</div>
+                                    <div class="bloodline-node-detail">
+                                        <div class="bn-name">${d.bloodline.gm.name}</div>
+                                        <div class="bn-title">${d.bloodline.gm.title}</div>
+                                        <div class="bn-chip">${d.bloodline.gm.chip}</div>
+                                    </div>
+                                </div>
+                                <div class="bloodline-parent-col">
+                                    <div class="bloodline-label">外祖父</div>
+                                    <div class="bloodline-node-detail">
+                                        <div class="bn-name">${d.bloodline.gf2.name}</div>
+                                        <div class="bn-title">${d.bloodline.gf2.title}</div>
+                                        <div class="bn-chip">${d.bloodline.gf2.chip}</div>
+                                    </div>
+                                </div>
+                                <div class="bloodline-parent-col">
+                                    <div class="bloodline-label">外祖母</div>
+                                    <div class="bloodline-node-detail">
+                                        <div class="bn-name">${d.bloodline.gm2.name}</div>
+                                        <div class="bn-title">${d.bloodline.gm2.title}</div>
+                                        <div class="bn-chip">${d.bloodline.gm2.chip}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bloodline-arrow-down">↓</div>
+                            <div class="bloodline-gen">
+                                <div class="bloodline-parent-col">
+                                    <div class="bloodline-node-detail">
+                                        <div class="bn-name">${d.bloodline.father.name}</div>
+                                        <div class="bn-title">${d.bloodline.father.title}</div>
+                                        <div class="bn-chip">${d.bloodline.father.chip}</div>
+                                    </div>
+                                </div>
+                                <div class="bloodline-parent-col">
+                                    <div class="bloodline-node-detail">
+                                        <div class="bn-name">${d.bloodline.mother.name}</div>
+                                        <div class="bn-title">${d.bloodline.mother.title}</div>
+                                        <div class="bn-chip">${d.bloodline.mother.chip}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bloodline-arrow-down">↓</div>
+                            <div class="bloodline-node-detail current">
+                                <div class="bn-name">${d.name}（本人）</div>
+                                <div class="bn-title">${d.status} · ${d.age} · ${d.color}</div>
+                                <div class="bn-chip">${d.chip}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-top:32px">
+                        <h4 style="font-family:'Noto Serif SC',serif;font-size:16px;color:#C9A96E;letter-spacing:3px;margin-bottom:16px">交易流转记录</h4>
+                        <table class="transaction-table">
+                            <thead><tr><th>日期</th><th>类型</th><th>出让方</th><th>接收方</th></tr></thead>
+                            <tbody>${transactionsHtml}</tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="tab-health" class="modal-tab-content">
+                    <div class="health-grid">
+                        <div class="health-card">
+                            <div class="health-card-title">基础体检</div>
+                            <div class="health-item"><span class="health-item-label">心率</span><span class="health-item-value good">${d.health.heartRate}</span></div>
+                            <div class="health-item"><span class="health-item-label">体温</span><span class="health-item-value good">${d.health.temperature}</span></div>
+                            <div class="health-item"><span class="health-item-label">食欲</span><span class="health-item-value good">${d.health.appetite}</span></div>
+                            <div class="health-item"><span class="health-item-label">体重趋势</span><span class="health-item-value good">${d.health.weightTrend}</span></div>
+                        </div>
+                        <div class="health-card">
+                            <div class="health-card-title">近期记录</div>
+                            <div class="health-item"><span class="health-item-label">最近体检</span><span class="health-item-value">${d.health.lastCheck}</span></div>
+                            <div class="health-item"><span class="health-item-label">下次体检</span><span class="health-item-value warning">${d.health.nextCheck}</span></div>
+                            <div class="health-item"><span class="health-item-label">芯片状态</span><span class="health-item-value good">✅ 正常</span></div>
+                            <div class="health-item"><span class="health-item-label">疫苗接种</span><span class="health-item-value good">✅ 全部完成</span></div>
+                        </div>
+                    </div>
+                    <div style="margin-top:24px;padding:20px;border:1px solid #1E1E1E;background:#151515;font-size:13px;color:#888;line-height:2">
+                        <strong style="color:#C9A96E">马医签字：</strong>本次体检结果符合盛世图腾平台健康标准，各项指标正常，建议继续维持当前饲养方案。<br>
+                        <strong style="color:#C9A96E">主治兽医：</strong>张伟（国家认证马匹健康鉴定师）<br>
+                        <strong style="color:#C9A96E">机构签章：</strong>长春盛世图腾马匹健康认证中心
+                    </div>
+                </div>
+
+                <div id="tab-download" class="modal-tab-content">
+                    <div class="download-section">
+                        <h4>📥 资料包下载</h4>
+                        <p>包含：血统证书 · 高清照片全套 · 视频素材 · 健康报告 · 产权确权文件</p>
+                        <div class="download-btns">
+                            <button class="btn-download-main" onclick="alert('下载开始：${d.name}_数字档案.pdf\\n（演示模式）')">下载完整档案 PDF</button>
+                            <button class="btn-download-secondary" onclick="alert('下载开始：${d.name}_血统证书.pdf\\n（演示模式）')">血统证书</button>
+                            <button class="btn-download-secondary" onclick="alert('下载开始：${d.name}_高清照片.zip\\n（演示模式）')">高清照片</button>
+                            <button class="btn-download-secondary" onclick="alert('下载开始：${d.name}_产权确权.pdf\\n（演示模式）')">产权确权文件</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeDetail() {
+            const modal = document.getElementById('horseModal');
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function openInquiry(id) {
+            const d = horseData[id];
+            const modal = document.getElementById('horseModal');
+            const content = document.getElementById('modalContent');
+            content.innerHTML = `
+                <div class="inquiry-modal">
+                    <div class="inquiry-header">
+                        <h2 class="inquiry-title">咨询 · ${d.name}</h2>
+                        <div class="inquiry-subtitle">我们的专属顾问将在24小时内与您联系</div>
+                    </div>
+                    <div class="inquiry-horse-info">
+                        <div class="inquiry-horse-img">
+                            <img src="${d.photos[0]}" alt="${d.name}" onerror="this.style.display='none'">
+                        </div>
+                        <div class="inquiry-horse-detail">
+                            <div class="inquiry-horse-name">${d.name}</div>
+                            <div class="inquiry-horse-chip">芯片号：${d.chip}</div>
+                            <div class="inquiry-horse-price">${d.price}</div>
+                        </div>
+                    </div>
+                    <div class="inquiry-form">
+                        <div class="inquiry-form-group">
+                            <label>您的姓名</label>
+                            <input type="text" id="inquiryName" placeholder="请输入姓名" class="inquiry-input">
+                        </div>
+                        <div class="inquiry-form-group">
+                            <label>联系电话</label>
+                            <input type="tel" id="inquiryPhone" placeholder="请输入手机号" class="inquiry-input">
+                        </div>
+                        <div class="inquiry-form-group">
+                            <label>咨询内容</label>
+                            <textarea id="inquiryMsg" placeholder="我想了解更多关于${d.name}的信息..." class="inquiry-textarea"></textarea>
+                        </div>
+                        <button class="btn-inquiry-submit" onclick="submitInquiry('${id}')">提交咨询</button>
+                    </div>
+                    <div class="inquiry-contact">
+                        <p>也可直接联系我们</p>
+                        <div class="inquiry-contact-item">📞 电话：400-888-9999</div>
+                        <div class="inquiry-contact-item">💬 微信：AKHAL-TEKE</div>
+                    </div>
+                </div>
+            `;
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function submitInquiry(id) {
+            const name = document.getElementById('inquiryName').value.trim();
+            const phone = document.getElementById('inquiryPhone').value.trim();
+            const msg = document.getElementById('inquiryMsg').value.trim();
+            if (!name || !phone) {
+                alert('请填写姓名和联系电话');
+                return;
+            }
+            alert('您的咨询已提交！\\n\\n我们的专属顾问将在24小时内联系您。\\n\\n感谢您对' + horseData[id].name + '的关注！');
+            closeDetail();
+        }
+
+        function showOwnerStory(horseId) {
+            const horse = horseData[horseId];
+            if (!horse || !horse.ownerStory) return;
+            const modal = document.getElementById('horseModal');
+            const content = document.getElementById('modalContent');
+            content.innerHTML = `
+                <div class="owner-story">
+                    <h2 class="owner-story-title">「 ${horse.name} 」与 ${horse.owner} 的故事</h2>
+                    <div class="owner-story-divider"></div>
+                    <p class="owner-story-text">${horse.ownerStory}</p>
+                    <button class="modal-close-btn" onclick="closeDetail()">关闭</button>
+                </div>
+            `;
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function switchTab(btn, tabId) {
+            document.querySelectorAll('.modal-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.modal-tab-content').forEach(c => c.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        function switchVideo(thumb, src, label, horseId) {
+            const mainVideo = document.getElementById('mainVideo-' + horseId);
+            const mainLabel = mainVideo ? mainVideo.parentElement.querySelector('.video-featured-label') : null;
+            if (mainVideo) {
+                mainVideo.src = src;
+                mainVideo.load();
+                mainVideo.play();
+            }
+            if (mainLabel) mainLabel.textContent = label;
+            document.querySelectorAll('.video-thumb-item').forEach(t => t.classList.remove('active'));
+            thumb.classList.add('active');
+        }
+
+
+        // ESC关闭弹窗
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') closeDetail();
+        });
+    </script>
+
+    <!-- 详细资料弹窗 -->
+    <div class="modal-overlay" id="horseModal" onclick="if(event.target===this)closeDetail()">
+        <button class="modal-close" onclick="closeDetail()">✕</button>
+        <div class="modal-container" id="modalContent"></div>
+    </div>
+</body>
+</html>

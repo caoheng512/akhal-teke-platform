@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>玉龙驹 · 汗血马数字确权与交易平台</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Noto+Serif+SC:wght@300;400;500&family=Playfair+Display:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --gold: #C9A96E;
+            --gold-light: #D4B896;
+            --gold-dark: #8B6914;
+            --black: #0A0A0A;
+            --black-soft: #111111;
+            --black-card: #151515;
+            --black-border: #1E1E1E;
+            --white: #FAFAFA;
+            --gray: #888888;
+            --gray-light: #AAAAAA;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--black);
+            color: var(--white);
+            font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* 导航 */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 20px 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.3s;
+        }
+
+        .navbar.scrolled {
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 15px 60px;
+        }
+
+        .nav-logo {
+            font-size: 20px;
+            font-weight: 500;
+            color: var(--gold);
+            letter-spacing: 6px;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 48px;
+        }
+
+        .nav-links a {
+            color: var(--white);
+            text-decoration: none;
+            font-size: 13px;
+            letter-spacing: 3px;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--gold);
+        }
+
+        .nav-back {
+            background: transparent;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            padding: 10px 28px;
+            font-size: 12px;
+            letter-spacing: 3px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+
+        .nav-back:hover {
+            background: var(--gold);
+            color: var(--black);
+        }
+
+        /* Hero 区域 */
+        .yulong-hero {
+            height: 100vh;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .yulong-hero video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.6;
+        }
+
+        .yulong-hero::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                to bottom,
+                rgba(10,10,10,0.3) 0%,
+                rgba(10,10,10,0.1) 40%,
+                rgba(10,10,10,0.8) 100%
+            );
+        }
+
+        .yulong-hero-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            max-width: 900px;
+            padding: 0 40px;
+        }
+
+        .yulong-badge {
+            display: inline-block;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            padding: 8px 24px;
+            font-size: 11px;
+            letter-spacing: 4px;
+            margin-bottom: 32px;
+        }
+
+        .yulong-title {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 96px;
+            font-weight: 500;
+            color: var(--white);
+            letter-spacing: 20px;
+            margin-bottom: 24px;
+            text-shadow: 0 4px 30px rgba(0,0,0,0.8);
+        }
+
+        .yulong-subtitle {
+            font-size: 16px;
+            color: var(--gold-light);
+            letter-spacing: 8px;
+            margin-bottom: 48px;
+        }
+
+        .yulong-price-tag {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 56px;
+            font-weight: 500;
+            color: var(--gold);
+            letter-spacing: 2px;
+            margin-bottom: 16px;
+            text-shadow: 0 2px 20px rgba(201,169,110,0.3);
+        }
+
+        .yulong-price-label {
+            font-size: 14px;
+            color: var(--gray);
+            letter-spacing: 6px;
+        }
+
+        .yulong-rarity {
+            margin-top: 60px;
+            display: flex;
+            justify-content: center;
+            gap: 80px;
+        }
+
+        .yulong-rarity-item {
+            text-align: center;
+        }
+
+        .yulong-rarity-num {
+            font-size: 48px;
+            color: var(--gold);
+            font-weight: 300;
+        }
+
+        .yulong-rarity-label {
+            font-size: 12px;
+            color: var(--gray);
+            letter-spacing: 3px;
+            margin-top: 8px;
+        }
+
+        .scroll-hint {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2;
+            color: var(--gray);
+            font-size: 11px;
+            letter-spacing: 4px;
+            animation: float 2s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(10px); }
+        }
+
+        /* 详情区域 */
+        .yulong-detail {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 120px 60px;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+
+        .section-tag {
+            font-size: 12px;
+            color: var(--gold);
+            letter-spacing: 6px;
+            margin-bottom: 16px;
+        }
+
+        .section-main-title {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 42px;
+            font-weight: 400;
+            color: var(--white);
+            letter-spacing: 8px;
+        }
+
+        /* 基本信息 */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2px;
+            background: var(--black-border);
+            border: 1px solid var(--black-border);
+        }
+
+        .info-item {
+            background: var(--black-card);
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .info-label {
+            font-size: 11px;
+            color: var(--gray);
+            letter-spacing: 3px;
+            margin-bottom: 12px;
+        }
+
+        .info-value {
+            font-size: 20px;
+            color: var(--white);
+            letter-spacing: 2px;
+        }
+
+        /* 血统证书 */
+        .bloodline-section {
+            margin-top: 120px;
+        }
+
+        .bloodline-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .bloodline-card {
+            background: var(--black-card);
+            border: 1px solid var(--black-border);
+            padding: 40px;
+            text-align: center;
+            transition: all 0.4s;
+        }
+
+        .bloodline-card:hover {
+            border-color: var(--gold);
+            transform: translateY(-4px);
+        }
+
+        .bloodline-title {
+            font-size: 12px;
+            color: var(--gold);
+            letter-spacing: 3px;
+            margin-bottom: 16px;
+        }
+
+        .bloodline-name {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 24px;
+            color: var(--white);
+            margin-bottom: 12px;
+        }
+
+        .bloodline-award {
+            font-size: 13px;
+            color: var(--gray);
+            line-height: 1.6;
+        }
+
+        .bloodline-chip {
+            font-size: 11px;
+            color: var(--gray-light);
+            margin-top: 16px;
+            letter-spacing: 1px;
+        }
+
+        /* 健康档案 */
+        .health-section {
+            margin-top: 120px;
+        }
+
+        .health-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 2px;
+            background: var(--black-border);
+        }
+
+        .health-item {
+            background: var(--black-card);
+            padding: 30px 20px;
+            text-align: center;
+        }
+
+        .health-icon {
+            font-size: 24px;
+            margin-bottom: 12px;
+        }
+
+        .health-label {
+            font-size: 11px;
+            color: var(--gray);
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+        }
+
+        .health-value {
+            font-size: 15px;
+            color: var(--white);
+        }
+
+        /* 影像集 */
+        .gallery-section {
+            margin-top: 120px;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+        }
+
+        .gallery-item {
+            position: relative;
+            aspect-ratio: 16/10;
+            overflow: hidden;
+            border: 1px solid var(--black-border);
+        }
+
+        .gallery-item video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s;
+        }
+
+        .gallery-item:hover video {
+            transform: scale(1.05);
+        }
+
+        .gallery-label {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0,0,0,0.8);
+            color: var(--gold);
+            padding: 8px 20px;
+            font-size: 12px;
+            letter-spacing: 3px;
+        }
+
+        /* 投资价值 */
+        .value-section {
+            margin-top: 120px;
+            background: linear-gradient(135deg, var(--black-card) 0%, var(--black-soft) 100%);
+            border: 1px solid var(--black-border);
+            padding: 80px;
+            text-align: center;
+        }
+
+        .value-title {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 36px;
+            color: var(--white);
+            margin-bottom: 48px;
+            letter-spacing: 6px;
+        }
+
+        .value-points {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+        }
+
+        .value-point {
+            max-width: 280px;
+        }
+
+        .value-point-icon {
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+
+        .value-point-title {
+            font-size: 16px;
+            color: var(--gold);
+            margin-bottom: 12px;
+            letter-spacing: 2px;
+        }
+
+        .value-point-text {
+            font-size: 14px;
+            color: var(--gray);
+            line-height: 1.8;
+        }
+
+        /* 咨询区域 */
+        .inquiry-section {
+            margin-top: 120px;
+            text-align: center;
+            padding: 80px;
+            border: 1px solid var(--gold);
+            background: linear-gradient(to bottom, rgba(201,169,110,0.05) 0%, transparent 100%);
+        }
+
+        .inquiry-title {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 36px;
+            color: var(--white);
+            margin-bottom: 16px;
+            letter-spacing: 6px;
+        }
+
+        .inquiry-sub {
+            font-size: 14px;
+            color: var(--gray);
+            margin-bottom: 48px;
+            letter-spacing: 2px;
+        }
+
+        .inquiry-btn {
+            background: var(--gold);
+            color: var(--black);
+            border: none;
+            padding: 18px 60px;
+            font-size: 14px;
+            letter-spacing: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .inquiry-btn:hover {
+            background: var(--gold-light);
+            transform: translateY(-2px);
+        }
+
+        /* 玉龙驹咨询弹窗 */
+        .yulong-inquiry-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.92);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            overflow-y: auto;
+        }
+
+        .yulong-inquiry-overlay.active {
+            display: flex;
+        }
+
+        .yulong-inquiry-modal {
+            background: var(--black-card);
+            border: 1px solid var(--black-border);
+            max-width: 500px;
+            width: 90%;
+            padding: 48px;
+            position: relative;
+        }
+
+        .yulong-inquiry-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: transparent;
+            border: 1px solid var(--black-border);
+            color: var(--gray);
+            width: 36px;
+            height: 36px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 18px;
+        }
+
+        .yulong-inquiry-close:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        .yulong-inquiry-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .yulong-inquiry-header h2 {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 28px;
+            color: var(--gold);
+            margin-bottom: 8px;
+            letter-spacing: 4px;
+        }
+
+        .yulong-inquiry-header p {
+            font-size: 13px;
+            color: var(--gray);
+        }
+
+        .yulong-inquiry-form {
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 11px;
+            color: var(--gray);
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            background: var(--black);
+            border: 1px solid var(--black-border);
+            color: var(--white);
+            padding: 14px 16px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--gold);
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-submit {
+            width: 100%;
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+            border: none;
+            color: var(--black);
+            padding: 16px;
+            font-size: 14px;
+            letter-spacing: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+            font-weight: 500;
+        }
+
+        .form-submit:hover {
+            box-shadow: 0 4px 30px rgba(201,169,110,0.4);
+            transform: translateY(-2px);
+        }
+
+        .yulong-inquiry-contact {
+            text-align: center;
+            padding-top: 24px;
+            border-top: 1px solid var(--black-border);
+            font-size: 13px;
+            color: var(--gray);
+        }
+
+        .yulong-inquiry-contact div {
+            margin-top: 8px;
+            color: var(--gold-light);
+        }
+
+        /* 页脚 */
+        .footer {
+            margin-top: 120px;
+            padding: 60px;
+            text-align: center;
+            border-top: 1px solid var(--black-border);
+        }
+
+        .footer-logo {
+            font-size: 18px;
+            color: var(--gold);
+            letter-spacing: 6px;
+            margin-bottom: 16px;
+        }
+
+        .footer-text {
+            font-size: 12px;
+            color: var(--gray);
+            letter-spacing: 2px;
+        }
+
+        /* 响应式 */
+        @media (max-width: 1200px) {
+            .info-grid { grid-template-columns: repeat(2, 1fr); }
+            .bloodline-grid { grid-template-columns: repeat(2, 1fr); }
+            .health-grid { grid-template-columns: repeat(3, 1fr); }
+            .yulong-title { font-size: 64px; letter-spacing: 12px; }
+            .yulong-price-tag { font-size: 48px; }
+        }
+
+        @media (max-width: 768px) {
+            .navbar { padding: 15px 30px; }
+            .nav-links { display: none; }
+            .yulong-title { font-size: 48px; letter-spacing: 8px; }
+            .yulong-rarity { flex-direction: column; gap: 30px; }
+            .info-grid { grid-template-columns: 1fr; }
+            .bloodline-grid { grid-template-columns: 1fr; }
+            .gallery-grid { grid-template-columns: 1fr; }
+            .value-points { flex-direction: column; align-items: center; }
+            .yulong-detail { padding: 80px 30px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 导航 -->
+    <nav class="navbar" id="navbar">
+        <a href="index.html" class="nav-logo">盛世图腾</a>
+        <div class="nav-links">
+            <a href="index.html#featured">名马</a>
+            <a href="index.html#jockeys">骑师</a>
+            <a href="index.html#archive">档案</a>
+        </div>
+        <a href="index.html" class="nav-back">返回首页</a>
+    </nav>
+
+    <!-- Hero 区域 -->
+    <section class="yulong-hero">
+        <video src="../../汗血马/玉龙驹.mp4" autoplay muted loop playsinline></video>
+        <div class="yulong-hero-content">
+            <div class="yulong-badge">AKHAL-TEKE · 芯片号 SST-AK-2021-001</div>
+            <h1 class="yulong-title">玉龙驹</h1>
+            <p class="yulong-subtitle">SPARKLE DRAGON · 白色精灵</p>
+            <div class="yulong-price-tag">¥ 1.5 亿</div>
+            <div class="yulong-price-label">指 导 价</div>
+            <div class="yulong-rarity">
+                <div class="yulong-rarity-item">
+                    <div class="yulong-rarity-num">3500</div>
+                    <div class="yulong-rarity-label">全球现存汗血马数量</div>
+                </div>
+                <div class="yulong-rarity-item">
+                    <div class="yulong-rarity-num">1%</div>
+                    <div class="yulong-rarity-label">纯白汗血马占比</div>
+                </div>
+                <div class="yulong-rarity-item">
+                    <div class="yulong-rarity-num">5代</div>
+                    <div class="yulong-rarity-label">连续冠军血统</div>
+                </div>
+            </div>
+        </div>
+        <div class="scroll-hint">SCROLL</div>
+    </section>
+
+    <!-- 基本信息 -->
+    <section class="yulong-detail">
+        <div class="section-title">
+            <div class="section-tag">BASIC INFORMATION</div>
+            <h2 class="section-main-title">基本信息</h2>
+        </div>
+        <div class="info-grid">
+            <div class="info-item">
+                <div class="info-label">性　别</div>
+                <div class="info-value">雄</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">年　龄</div>
+                <div class="info-value">5岁</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">毛　色</div>
+                <div class="info-value">白色</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">体　高</div>
+                <div class="info-value">163cm</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">体　重</div>
+                <div class="info-value">475kg</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">产　地</div>
+                <div class="info-value">长春</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">状　态</div>
+                <div class="info-value">待售</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">芯 片 号</div>
+                <div class="info-value" style="font-size: 14px;">SST-AK-2021-001</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 血统证书 -->
+    <section class="yulong-detail">
+        <div class="section-title">
+            <div class="section-tag">BLOODLINE CERTIFICATE</div>
+            <h2 class="section-main-title">血统证书</h2>
+        </div>
+        <div class="bloodline-grid">
+            <div class="bloodline-card">
+                <div class="bloodline-title">父　亲</div>
+                <div class="bloodline-name">2018土库曼国家冠军</div>
+                <div class="bloodline-award">连续三届国际马术大赛冠军<br>被誉为"沙漠战神"</div>
+                <div class="bloodline-chip">芯片号：SST-AK-2015-001</div>
+            </div>
+            <div class="bloodline-card">
+                <div class="bloodline-title">母　亲</div>
+                <div class="bloodline-name">2016繁育大赛冠军</div>
+                <div class="bloodline-award">繁育成功率最高的冠军母马<br>后代在国际赛事中屡获佳绩</div>
+                <div class="bloodline-chip">芯片号：SST-AK-2016-002</div>
+            </div>
+            <div class="bloodline-card">
+                <div class="bloodline-title">祖　父</div>
+                <div class="bloodline-name">2008国际赛冠军</div>
+                <div class="bloodline-award">汗血马历史上最伟大的赛马<br>创造了至今无人打破的记录</div>
+                <div class="bloodline-chip">芯片号：SST-AK-2005-001</div>
+            </div>
+            <div class="bloodline-card">
+                <div class="bloodline-title">祖　母</div>
+                <div class="bloodline-name">血统认证A级</div>
+                <div class="bloodline-award">纯正土库曼皇室血统<br>参与过多个国家的马匹繁育计划</div>
+                <div class="bloodline-chip">芯片号：SST-AK-2006-002</div>
+            </div>
+            <div class="bloodline-card">
+                <div class="bloodline-title">外祖父</div>
+                <div class="bloodline-name">2005迪拜杯冠军</div>
+                <div class="bloodline-award">迪拜皇室御用种马<br>繁育出超过20匹冠军后代</div>
+                <div class="bloodline-chip">芯片号：SST-AK-2002-003</div>
+            </div>
+            <div class="bloodline-card">
+                <div class="bloodline-title">外祖母</div>
+                <div class="bloodline-name">繁育认证B级</div>
+                <div class="bloodline-award">繁育能力极强的优秀母马<br>多匹后代已成为顶级赛马</div>
+                <div class="bloodline-chip">芯片号：SST-AK-2004-004</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 健康档案 -->
+    <section class="yulong-detail">
+        <div class class="section-title">
+            <div class="section-tag">HEALTH RECORD</div>
+            <h2 class="section-main-title">健康档案</h2>
+        </div>
+        <div class="health-grid">
+            <div class="health-item">
+                <div class="health-icon">❤️</div>
+                <div class="health-label">心率</div>
+                <div class="health-value">38次/分<br>正常</div>
+            </div>
+            <div class="health-item">
+                <div class="health-icon">🌡️</div>
+                <div class="health-label">体温</div>
+                <div class="health-value">37.8°C<br>正常</div>
+            </div>
+            <div class="health-item">
+                <div class="health-icon">🍽️</div>
+                <div class="health-label">食欲</div>
+                <div class="health-value">良好</div>
+            </div>
+            <div class="health-item">
+                <div class="health-icon">⚖️</div>
+                <div class="health-label">体重</div>
+                <div class="health-value">稳定</div>
+            </div>
+            <div class="health-item">
+                <div class="health-icon">📅</div>
+                <div class="health-label">下次体检</div>
+                <div class="health-value">2026-04-20</div>
+            </div>
+        </div>
+        <div style="text-align: center; margin-top: 24px; color: var(--gray); font-size: 12px; letter-spacing: 2px;">
+            最近体检：2026-03-15　｜　专属兽医团队24小时监护
+        </div>
+    </section>
+
+    <!-- 影像集 -->
+    <section class="yulong-detail">
+        <div class="section-title">
+            <div class="section-tag">VIDEO GALLERY</div>
+            <h2 class="section-main-title">影像集</h2>
+        </div>
+        <div class="gallery-grid">
+            <div class="gallery-item">
+                <video src="../../汗血马/玉龙驹.mp4" muted loop playsinline controls></video>
+                <div class="gallery-label">行走姿态</div>
+            </div>
+            <div class="gallery-item">
+                <video src="../../汗血马/玉龙驹.mp4" muted loop playsinline controls></video>
+                <div class="gallery-label">奔跑展示</div>
+            </div>
+            <div class="gallery-item">
+                <video src="../../汗血马/玉龙驹.mp4" muted loop playsinline controls></video>
+                <div class="gallery-label">日常喂养</div>
+            </div>
+            <div class="gallery-item">
+                <video src="../../汗血马/玉龙驹.mp4" muted loop playsinline controls></video>
+                <div class="gallery-label">马厩环境</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 投资价值 -->
+    <section class="yulong-detail">
+        <div class="value-section">
+            <h2 class="value-title">投 资 价 值</h2>
+            <div class="value-points">
+                <div class="value-point">
+                    <div class="value-point-icon">🏆</div>
+                    <div class="value-point-title">冠军血统</div>
+                    <div class="value-point-text">五代人连续冠军血统，基因优良，遗传稳定，是繁育下一代的绝佳选择</div>
+                </div>
+                <div class="value-point">
+                    <div class="value-point-icon">💎</div>
+                    <div class="value-point-title">稀缺珍品</div>
+                    <div class="value-point-text">全球仅约3500匹汗血马，纯白个体更为罕见，具备极高的收藏价值</div>
+                </div>
+                <div class="value-point">
+                    <div class="value-point-icon">📈</div>
+                    <div class="value-point-title">增值潜力</div>
+                    <div class="value-point-text">汗血马价格过去十年上涨超过500%，1.5亿的价值随着稀缺性加剧将持续攀升</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 咨询 -->
+    <section class="yulong-detail">
+        <div class="inquiry-section">
+            <h2 class="inquiry-title">尊 享 咨 询</h2>
+            <p class="inquiry-sub">如需预约鉴赏或了解更多详情，请联系我们的专属顾问</p>
+            <button class="inquiry-btn" onclick="openYulongInquiry()">预约鉴赏玉龙驹</button>
+        </div>
+    </section>
+
+    <!-- 咨询弹窗 -->
+    <div class="yulong-inquiry-overlay" id="yulongInquiryOverlay">
+        <div class="yulong-inquiry-modal">
+            <button class="yulong-inquiry-close" onclick="closeYulongInquiry()">✕</button>
+            <div class="yulong-inquiry-header">
+                <h2>咨询 · 玉龙驹</h2>
+                <p>我们的专属顾问将在24小时内与您联系</p>
+            </div>
+            <div class="yulong-inquiry-form">
+                <div class="form-group">
+                    <label>您的姓名</label>
+                    <input type="text" id="yuName" placeholder="请输入姓名">
+                </div>
+                <div class="form-group">
+                    <label>联系电话</label>
+                    <input type="tel" id="yuPhone" placeholder="请输入手机号">
+                </div>
+                <div class="form-group">
+                    <label>咨询内容</label>
+                    <textarea id="yuMsg" placeholder="我想了解更多关于玉龙驹的信息..."></textarea>
+                </div>
+                <button class="form-submit" onclick="submitYulongInquiry()">提交咨询</button>
+            </div>
+            <div class="yulong-inquiry-contact">
+                <p>也可直接联系我们</p>
+                <div>📞 400-888-9999</div>
+                <div>💬 AKHAL-TEKE</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="footer-logo">盛世图腾</div>
+        <div class="footer-text">AKHAL-TEKE DIGITAL HERITAGE</div>
+    </footer>
+
+    <script>
+        // 导航滚动效果
+        window.addEventListener('scroll', () => {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 100) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        function openYulongInquiry() {
+            document.getElementById('yulongInquiryOverlay').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeYulongInquiry() {
+            document.getElementById('yulongInquiryOverlay').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function submitYulongInquiry() {
+            const name = document.getElementById('yuName').value.trim();
+            const phone = document.getElementById('yuPhone').value.trim();
+            const msg = document.getElementById('yuMsg').value.trim();
+            if (!name || !phone) {
+                alert('请填写姓名和联系电话');
+                return;
+            }
+            alert('您的咨询已提交！\n\n我们的专属顾问将在24小时内联系您。\n\n感谢您对玉龙驹的关注！');
+            closeYulongInquiry();
+        }
+
+        // ESC关闭弹窗
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') closeYulongInquiry();
+        });
+    </script>
+</body>
+</html>
