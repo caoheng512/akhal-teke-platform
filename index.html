@@ -493,6 +493,7 @@
             position: relative;
             overflow: hidden;
             border-radius: 12px;
+            cursor: pointer;
         }
 
         /* 旋转金色边框 */
@@ -2964,7 +2965,7 @@
         });
     }, { threshold: 0.5 });
 
-    document.querySelectorAll('.stats').forEach(el => statsObserver.observe(el));
+    // stats observer moved to end of page where stats section exists
 
     // 回到顶部按钮
     document.body.insertAdjacentHTML('beforeend', '<button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:\'smooth\'})">↑</button>');
@@ -3305,7 +3306,7 @@
 
     <!-- Hero -->
     <section class="hero">
-        <div class="hero-video-bg" style="background-image: url('../../汗血马/玉龙驹.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat;"></div>
+        <div class="hero-video-bg" style="background-image: url('assets/玉龙驹.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat;"></div>
         <div class="hero-overlay"></div>
         <div class="hero-particles" id="heroParticles"></div>
         <div class="hero-content">
@@ -3358,7 +3359,7 @@
             <!-- 玉龙驹 -->
             <div class="horse-card fade-in" dataHorse="yulong">
                 <div class="horse-card-media">
-                    <video id="video-yulong" src="../../汗血马/玉龙驹.mp4" muted loop playsinline></video>
+                    <video id="video-yulong" src="assets/玉龙驹.mp4" muted loop playsinline></video>
                     <span class="horse-card-status status-sale">待售</span>
                     <div class="play-btn-overlay" onclick="toggleVideo('yulong')"><span class="play-btn-icon" id="icon-yulong">▶</span></div>
                     <button class="fav-btn" id="fav-yulong" onclick="toggleFavorite('horse','yulong')">♡</button>
@@ -3394,7 +3395,7 @@
             <!-- 赤兔 -->
             <div class="horse-card fade-in" dataHorse="chitu">
                 <div class="horse-card-media">
-                    <video id="video-chitu" src="../../汗血马/赤兔.mp4" muted loop playsinline></video>
+                    <video id="video-chitu" src="assets/赤兔.mp4" muted loop playsinline></video>
                     <span class="horse-card-status status-breeding">配种中</span>
                     <div class="play-btn-overlay" onclick="toggleVideo('chitu')"><span class="play-btn-icon" id="icon-chitu">▶</span></div>
                     <button class="fav-btn" id="fav-chitu" onclick="toggleFavorite('horse','chitu')">♡</button>
@@ -3430,7 +3431,7 @@
             <!-- 将军 -->
             <div class="horse-card fade-in" dataHorse="jiangjun">
                 <div class="horse-card-media">
-                    <video id="video-jiangjun" src="../../汗血马/将军.mp4" muted loop playsinline></video>
+                    <video id="video-jiangjun" src="assets/将军.mp4" muted loop playsinline></video>
                     <span class="horse-card-status status-owned">有主</span>
                     <div class="play-btn-overlay" onclick="toggleVideo('jiangjun')"><span class="play-btn-icon" id="icon-jiangjun">▶</span></div>
                     <button class="fav-btn" id="fav-jiangjun" onclick="toggleFavorite('horse','jiangjun')">♡</button>
@@ -3466,7 +3467,7 @@
             <!-- 烈焰 -->
             <div class="horse-card fade-in" dataHorse="lieyan">
                 <div class="horse-card-media">
-                    <video id="video-lieyan" src="../../汗血马/烈焰.mp4" muted loop playsinline></video>
+                    <video id="video-lieyan" src="assets/烈焰.mp4" muted loop playsinline></video>
                     <span class="horse-card-status status-breeding">配种中</span>
                     <div class="play-btn-overlay" onclick="toggleVideo('lieyan')"><span class="play-btn-icon" id="icon-lieyan">▶</span></div>
                     <button class="fav-btn" id="fav-lieyan" onclick="toggleFavorite('horse','lieyan')">♡</button>
@@ -3502,7 +3503,7 @@
             <!-- 汉白玉 -->
             <div class="horse-card fade-in" dataHorse="hanbaiyu">
                 <div class="horse-card-media">
-                    <video id="video-hanbaiyu" src="../../汗血马/汉白玉.mp4" muted loop playsinline></video>
+                    <video id="video-hanbaiyu" src="assets/汉白玉.mp4" muted loop playsinline></video>
                     <span class="horse-card-status status-owned">有主</span>
                     <div class="play-btn-overlay" onclick="toggleVideo('hanbaiyu')"><span class="play-btn-icon" id="icon-hanbaiyu">▶</span></div>
                     <button class="fav-btn" id="fav-hanbaiyu" onclick="toggleFavorite('horse','hanbaiyu')">♡</button>
@@ -3538,7 +3539,7 @@
             <!-- 黑风 -->
             <div class="horse-card fade-in" dataHorse="heifeng">
                 <div class="horse-card-media">
-                    <video id="video-heifeng" src="../../汗血马/黑风.mp4" muted loop playsinline></video>
+                    <video id="video-heifeng" src="assets/黑风.mp4" muted loop playsinline></video>
                     <span class="horse-card-status status-sale">待售</span>
                     <div class="play-btn-overlay" onclick="toggleVideo('heifeng')"><span class="play-btn-icon" id="icon-heifeng">▶</span></div>
                     <button class="fav-btn" id="fav-heifeng" onclick="toggleFavorite('horse','heifeng')">♡</button>
@@ -3585,7 +3586,7 @@
 
             <div class="jockey-card fade-in">
                 <div class="jockey-img-wrapper">
-                    <img src="../../汗血马/骑士1.jpeg" alt="苏晴" class="jockey-img">
+                    <img src="assets/骑士1.jpeg" alt="苏晴" class="jockey-img">
                     <button class="fav-btn" id="fav-suqin" onclick="toggleFavorite('jockey','suqing')">♡</button>
                 </div>
                 <div class="jockey-info">
@@ -3612,7 +3613,7 @@
 
             <div class="jockey-card fade-in">
                 <div class="jockey-img-wrapper">
-                    <img src="../../汗血马/骑士2.jpeg" alt="陈雨薇" class="jockey-img">
+                    <img src="assets/骑士2.jpeg" alt="陈雨薇" class="jockey-img">
                     <button class="fav-btn" id="fav-chenyuwei" onclick="toggleFavorite('jockey','chenyuwei')">♡</button>
                 </div>
                 <div class="jockey-info">
@@ -3639,7 +3640,7 @@
 
             <div class="jockey-card fade-in">
                 <div class="jockey-img-wrapper">
-                    <img src="../../汗血马/骑士3.jpeg" alt="林梦婷" class="jockey-img">
+                    <img src="assets/骑士3.jpeg" alt="林梦婷" class="jockey-img">
                     <button class="fav-btn" id="fav-linmengting" onclick="toggleFavorite('jockey','linmengting')">♡</button>
                 </div>
                 <div class="jockey-info">
@@ -3666,7 +3667,7 @@
 
             <div class="jockey-card fade-in">
                 <div class="jockey-img-wrapper">
-                    <img src="../../汗血马/骑士4.jpeg" alt="赵子龙" class="jockey-img">
+                    <img src="assets/骑士4.jpeg" alt="赵子龙" class="jockey-img">
                     <button class="fav-btn" id="fav-zhaozilong" onclick="toggleFavorite('jockey','zhaozilong')">♡</button>
                 </div>
                 <div class="jockey-info">
@@ -4034,11 +4035,11 @@
                     weightTrend: '稳定',
                     nextCheck: '2026-04-20'
                 },
-                photos: ['../../汗血马/玉龙驹.mp4','../../汗血马/玉龙驹.mp4','../../汗血马/玉龙驹.mp4','../../汗血马/玉龙驹.mp4','../../汗血马/玉龙驹.mp4','../../汗血马/玉龙驹.mp4','../../汗血马/玉龙驹.mp4','../../汗血马/玉龙驹.mp4','../../汗血马/玉龙驹.mp4','../../汗血马/玉龙驹.mp4'],
+                photos: ['assets/玉龙驹.mp4','assets/玉龙驹.mp4','assets/玉龙驹.mp4','assets/玉龙驹.mp4','assets/玉龙驹.mp4','assets/玉龙驹.mp4','assets/玉龙驹.mp4','assets/玉龙驹.mp4','assets/玉龙驹.mp4','assets/玉龙驹.mp4'],
                 videos: [
-                    {label: '行走姿态', src: '../../汗血马/玉龙驹.mp4'},
-                    {label: '奔跑展示', src: '../../汗血马/玉龙驹.mp4'},
-                    {label: '日常喂养', src: '../../汗血马/玉龙驹.mp4'}
+                    {label: '行走姿态', src: 'assets/玉龙驹.mp4'},
+                    {label: '奔跑展示', src: 'assets/玉龙驹.mp4'},
+                    {label: '日常喂养', src: 'assets/玉龙驹.mp4'}
                 ],
                 bloodline: {
                     father: {name: '父亲', title: '2018土库曼国家冠军', chip: 'SST-AK-2015-001'},
@@ -4078,11 +4079,11 @@
                     weightTrend: '略有上升',
                     nextCheck: '2026-04-15'
                 },
-                photos: ['../../汗血马/赤兔.mp4','../../汗血马/赤兔.mp4','../../汗血马/赤兔.mp4','../../汗血马/赤兔.mp4','../../汗血马/赤兔.mp4','../../汗血马/赤兔.mp4','../../汗血马/赤兔.mp4','../../汗血马/赤兔.mp4','../../汗血马/赤兔.mp4','../../汗血马/赤兔.mp4'],
+                photos: ['assets/赤兔.mp4','assets/赤兔.mp4','assets/赤兔.mp4','assets/赤兔.mp4','assets/赤兔.mp4','assets/赤兔.mp4','assets/赤兔.mp4','assets/赤兔.mp4','assets/赤兔.mp4','assets/赤兔.mp4'],
                 videos: [
-                    {label: '行走姿态', src: '../../汗血马/赤兔.mp4'},
-                    {label: '奔跑展示', src: '../../汗血马/赤兔.mp4'},
-                    {label: '日常喂养', src: '../../汗血马/赤兔.mp4'}
+                    {label: '行走姿态', src: 'assets/赤兔.mp4'},
+                    {label: '奔跑展示', src: 'assets/赤兔.mp4'},
+                    {label: '日常喂养', src: 'assets/赤兔.mp4'}
                 ],
                 bloodline: {
                     father: {name: '父亲', title: '2012国际赛冠军', chip: 'SST-AK-2009-002'},
@@ -4122,11 +4123,11 @@
                     weightTrend: '稳定',
                     nextCheck: '2026-05-01'
                 },
-                photos: ['../../汗血马/将军.mp4','../../汗血马/将军.mp4','../../汗血马/将军.mp4','../../汗血马/将军.mp4','../../汗血马/将军.mp4','../../汗血马/将军.mp4','../../汗血马/将军.mp4','../../汗血马/将军.mp4','../../汗血马/将军.mp4','../../汗血马/将军.mp4'],
+                photos: ['assets/将军.mp4','assets/将军.mp4','assets/将军.mp4','assets/将军.mp4','assets/将军.mp4','assets/将军.mp4','assets/将军.mp4','assets/将军.mp4','assets/将军.mp4','assets/将军.mp4'],
                 videos: [
-                    {label: '行走姿态', src: '../../汗血马/将军.mp4'},
-                    {label: '奔跑展示', src: '../../汗血马/将军.mp4'},
-                    {label: '日常训练', src: '../../汗血马/将军.mp4'}
+                    {label: '行走姿态', src: 'assets/将军.mp4'},
+                    {label: '奔跑展示', src: 'assets/将军.mp4'},
+                    {label: '日常训练', src: 'assets/将军.mp4'}
                 ],
                 bloodline: {
                     father: {name: '父亲', title: '2010世界冠军', chip: 'SST-AK-2007-003'},
@@ -4167,11 +4168,11 @@
                     weightTrend: '稳定',
                     nextCheck: '2026-04-25'
                 },
-                photos: ['../../汗血马/烈焰.mp4','../../汗血马/烈焰.mp4','../../汗血马/烈焰.mp4','../../汗血马/烈焰.mp4','../../汗血马/烈焰.mp4','../../汗血马/烈焰.mp4','../../汗血马/烈焰.mp4','../../汗血马/烈焰.mp4','../../汗血马/烈焰.mp4','../../汗血马/烈焰.mp4'],
+                photos: ['assets/烈焰.mp4','assets/烈焰.mp4','assets/烈焰.mp4','assets/烈焰.mp4','assets/烈焰.mp4','assets/烈焰.mp4','assets/烈焰.mp4','assets/烈焰.mp4','assets/烈焰.mp4','assets/烈焰.mp4'],
                 videos: [
-                    {label: '行走姿态', src: '../../汗血马/烈焰.mp4'},
-                    {label: '奔跑展示', src: '../../汗血马/烈焰.mp4'},
-                    {label: '日常喂养', src: '../../汗血马/烈焰.mp4'}
+                    {label: '行走姿态', src: 'assets/烈焰.mp4'},
+                    {label: '奔跑展示', src: 'assets/烈焰.mp4'},
+                    {label: '日常喂养', src: 'assets/烈焰.mp4'}
                 ],
                 bloodline: {
                     father: {name: '父亲', title: '2016国家冠军', chip: 'SST-AK-2013-004'},
@@ -4212,11 +4213,11 @@
                     weightTrend: '略有上升',
                     nextCheck: '2026-05-10'
                 },
-                photos: ['../../汗血马/汉白玉.mp4','../../汗血马/汉白玉.mp4','../../汗血马/汉白玉.mp4','../../汗血马/汉白玉.mp4','../../汗血马/汉白玉.mp4','../../汗血马/汉白玉.mp4','../../汗血马/汉白玉.mp4','../../汗血马/汉白玉.mp4','../../汗血马/汉白玉.mp4','../../汗血马/汉白玉.mp4'],
+                photos: ['assets/汉白玉.mp4','assets/汉白玉.mp4','assets/汉白玉.mp4','assets/汉白玉.mp4','assets/汉白玉.mp4','assets/汉白玉.mp4','assets/汉白玉.mp4','assets/汉白玉.mp4','assets/汉白玉.mp4','assets/汉白玉.mp4'],
                 videos: [
-                    {label: '行走姿态', src: '../../汗血马/汉白玉.mp4'},
-                    {label: '奔跑展示', src: '../../汗血马/汉白玉.mp4'},
-                    {label: '日常训练', src: '../../汗血马/汉白玉.mp4'}
+                    {label: '行走姿态', src: 'assets/汉白玉.mp4'},
+                    {label: '奔跑展示', src: 'assets/汉白玉.mp4'},
+                    {label: '日常训练', src: 'assets/汉白玉.mp4'}
                 ],
                 bloodline: {
                     father: {name: '父亲', title: '2017世界冠军', chip: 'SST-AK-2014-005'},
@@ -4255,11 +4256,11 @@
                     weightTrend: '稳定',
                     nextCheck: '2026-04-30'
                 },
-                photos: ['../../汗血马/黑风.mp4','../../汗血马/黑风.mp4','../../汗血马/黑风.mp4','../../汗血马/黑风.mp4','../../汗血马/黑风.mp4','../../汗血马/黑风.mp4','../../汗血马/黑风.mp4','../../汗血马/黑风.mp4','../../汗血马/黑风.mp4','../../汗血马/黑风.mp4'],
+                photos: ['assets/黑风.mp4','assets/黑风.mp4','assets/黑风.mp4','assets/黑风.mp4','assets/黑风.mp4','assets/黑风.mp4','assets/黑风.mp4','assets/黑风.mp4','assets/黑风.mp4','assets/黑风.mp4'],
                 videos: [
-                    {label: '行走姿态', src: '../../汗血马/黑风.mp4'},
-                    {label: '奔跑展示', src: '../../汗血马/黑风.mp4'},
-                    {label: '日常训练', src: '../../汗血马/黑风.mp4'}
+                    {label: '行走姿态', src: 'assets/黑风.mp4'},
+                    {label: '奔跑展示', src: 'assets/黑风.mp4'},
+                    {label: '日常训练', src: 'assets/黑风.mp4'}
                 ],
                 bloodline: {
                     father: {name: '父亲', title: '2010国际赛冠军', chip: 'SST-AK-2007-006'},
@@ -4281,7 +4282,7 @@
             suqing: {
                 name: '苏晴',
                 club: '长春盛世图腾马术俱乐部',
-                img: '../../汗血马/骑士1.jpeg',
+                img: 'assets/骑士1.jpeg',
                 gender: '女',
                 age: '28岁',
                 height: '162cm',
@@ -4293,7 +4294,7 @@
             chenyuwei: {
                 name: '陈雨薇',
                 club: '杭州钱塘马术学院',
-                img: '../../汗血马/骑士2.jpeg',
+                img: 'assets/骑士2.jpeg',
                 gender: '女',
                 age: '24岁',
                 height: '158cm',
@@ -4305,7 +4306,7 @@
             linmengting: {
                 name: '林梦婷',
                 club: '上海外滩马术中心',
-                img: '../../汗血马/骑士3.jpeg',
+                img: 'assets/骑士3.jpeg',
                 gender: '女',
                 age: '31岁',
                 height: '160cm',
@@ -4317,7 +4318,7 @@
             zhaozilong: {
                 name: '赵子龙',
                 club: '北京京华马术俱乐部',
-                img: '../../汗血马/骑士4.jpeg',
+                img: 'assets/骑士4.jpeg',
                 gender: '男',
                 age: '35岁',
                 height: '175cm',
@@ -4640,6 +4641,11 @@
         document.addEventListener('keydown', e => {
             if (e.key === 'Escape') closeDetail();
         });
+
+        // 统计数字动画 (DOM加载完成后再观察)
+        if (typeof statsObserver !== 'undefined') {
+            document.querySelectorAll('.stats').forEach(el => statsObserver.observe(el));
+        }
     </script>
 
     <!-- 详细资料弹窗 -->

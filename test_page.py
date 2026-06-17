@@ -9,7 +9,7 @@ import sys
 from pathlib import Path
 
 HTML_FILE = Path(__file__).parent / "index.html"
-ASSETS_DIR = Path(__file__).parent.parent.parent / "汗血马"  # ../../汗血马
+ASSETS_DIR = Path(__file__).parent / "assets"
 
 ISSUES = []
 WARNINGS = []
@@ -17,6 +17,11 @@ WARNINGS = []
 
 def check_file_exists(path: str, context: str):
     """检查引用的文件是否存在"""
+    if (
+        not path
+        or path.startswith(("data:", "http://", "https://", "#", "mailto:", "tel:"))
+    ):
+        return
     full = HTML_FILE.parent / path
     if not full.exists():
         ISSUES.append(f"[文件缺失] {context}: {path}")
