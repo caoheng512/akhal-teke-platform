@@ -494,6 +494,8 @@
             overflow: hidden;
             border-radius: 12px;
             cursor: pointer;
+            aspect-ratio: 4 / 3;
+            background: #050505;
         }
 
         /* 旋转金色边框 */
@@ -531,14 +533,21 @@
         }
 
         .horse-card-media video {
+            position: absolute;
+            inset: 0;
             width: 100%;
-            aspect-ratio: 4/3;
+            height: 100%;
             object-fit: cover;
-            display: block;
+            background: #050505;
             filter: brightness(0.9);
             transition: all 0.4s ease;
             cursor: pointer;
             border-radius: 12px;
+            z-index: 0;
+        }
+
+        .horse-card-media.playing .horse-media-poster {
+            opacity: 0;
         }
 
         .horse-card:hover .horse-card-media video {
@@ -845,15 +854,22 @@
             padding: 20px;
         }
 
+        .jockey-name-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 4px;
+        }
+
         .jockey-name {
             font-family: 'Noto Serif SC', serif;
             font-size: 20px;
             font-weight: 500;
             color: var(--white);
-            margin-bottom: 4px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            line-height: 1.2;
+            margin: 0;
+            flex: 1;
         }
 
         .jockey-price {
@@ -862,6 +878,8 @@
             letter-spacing: 1px;
             font-family: 'Helvetica Neue', 'Arial', sans-serif;
             text-align: right;
+            white-space: nowrap;
+            flex-shrink: 0;
         }
 
         .jockey-price span {
@@ -938,6 +956,19 @@
             line-height: 1.7;
             border-top: 1px solid var(--black-border);
             padding-top: 12px;
+        }
+
+        .horse-media-poster {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            border-radius: 12px;
+            z-index: 1;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
         }
 
         .bloodline {
@@ -1272,42 +1303,139 @@
 
         @media (max-width: 900px) {
             nav {
-                padding: 20px 30px;
+                padding: 16px 20px;
+                justify-content: space-between;
+                align-items: center;
             }
 
-            .nav-links {
+            .logo {
+                left: 20px;
+                font-size: 18px;
+                letter-spacing: 3px;
+            }
+
+            .nav-links,
+            .nav-vip-btn {
                 display: none;
             }
 
+            .nav-mobile-toggle {
+                display: flex;
+                right: 16px;
+                top: 14px;
+                transform: none;
+            }
+
+            .hero {
+                min-height: 88vh;
+                height: auto;
+                padding: 110px 20px 56px;
+            }
+
+            .hero-content {
+                padding: 0 10px;
+                max-width: 100%;
+            }
+
+            .hero-badge {
+                font-size: 10px;
+                letter-spacing: 2px;
+                padding: 6px 14px;
+                margin-bottom: 24px;
+            }
+
             .hero h1 {
-                font-size: 48px;
+                font-size: 40px;
+                line-height: 1.15;
+                letter-spacing: 2px;
             }
 
             .hero-subtitle {
-                font-size: 14px;
-                letter-spacing: 4px;
+                font-size: 11px;
+                letter-spacing: 3px;
+                margin-bottom: 16px;
+            }
+
+            .hero-desc {
+                font-size: 13px;
+                line-height: 1.85;
+                margin-bottom: 24px;
+            }
+
+            .hero-cta {
+                gap: 10px;
+            }
+
+            .btn-hero {
+                padding: 14px 20px;
+                font-size: 13px;
+                letter-spacing: 2px;
+            }
+
+            .scroll-indicator {
+                bottom: 18px;
+                font-size: 10px;
             }
 
             .stats {
-                grid-template-columns: repeat(2, 1fr);
-                padding: 60px 30px;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                padding: 52px 20px;
+                gap: 12px;
             }
 
-            .featured {
-                padding: 80px 30px;
+            .stat-item {
+                padding: 0 10px 10px;
+                border-right: none;
+                border-bottom: 1px solid rgba(255,255,255,0.06);
             }
 
-            .archive-content {
+            .stat-number {
+                font-size: 40px;
+                letter-spacing: -1px;
+            }
+
+            .featured,
+            .jockeys,
+            .bloodline,
+            .trust-section,
+            .contact-section,
+            .process-section,
+            .faq-section {
+                padding-left: 20px;
+                padding-right: 20px;
+                padding-top: 72px;
+                padding-bottom: 72px;
+            }
+
+            .section-title,
+            .archive-text h2,
+            .value-title,
+            .inquiry-title {
+                font-size: 28px;
+                letter-spacing: 2px;
+            }
+
+            .section-desc,
+            .trust-desc,
+            .faq-a,
+            .process-desc,
+            .contact-note {
+                font-size: 12px;
+                line-height: 1.75;
+            }
+
+            .archive-content,
+            .horses-grid,
+            .jockeys-grid,
+            .trust-grid,
+            .contact-grid,
+            .faq-grid {
                 grid-template-columns: 1fr;
-                gap: 40px;
+                gap: 16px;
             }
 
             .archive-img-accent {
                 display: none;
-            }
-
-            .horses-grid {
-                grid-template-columns: 1fr;
             }
 
             .invite-form {
@@ -1321,73 +1449,151 @@
             .bloodline-arrow {
                 transform: rotate(90deg);
             }
-        }
 
-        @media (max-width: 600px) {
-            .hero h1 {
-                font-size: 36px;
+            .horse-card-media video {
+                aspect-ratio: 16 / 11;
             }
 
-            .section-title {
-                font-size: 32px;
+            .horse-card-info {
+                padding-top: 14px;
             }
 
-            .archive-text h2 {
-                font-size: 32px;
+            .horse-card-name,
+            .jockey-name {
+                font-size: 18px;
             }
 
-            .stats {
-                grid-template-columns: 1fr 1fr;
-                gap: 20px;
+            .horse-card-meta-row {
+                gap: 5px;
+                margin-bottom: 10px;
             }
 
-            .stat-number {
-                font-size: 36px;
-            }
-
-            .modal-container {
-                padding: 0 16px 60px;
-                margin: 20px auto;
-            }
-
-            .modal-title {
-                font-size: 32px;
-            }
-
-            .modal-tabs {
-                gap: 0;
-            }
-
-            .modal-tab {
-                padding: 12px 16px;
+            .meta-tag,
+            .status-badge,
+            .location-tag,
+            .owner-tag,
+            .horse-card-chip,
+            .jockey-club,
+            .jockey-detail-lbl,
+            .jockey-detail-val,
+            .jockey-price,
+            .jockey-price span {
                 font-size: 11px;
             }
 
-            .photo-gallery {
-                grid-template-columns: repeat(3, 1fr);
+            .horse-card-status-row,
+            .horse-card-bottom {
+                flex-direction: column;
+                align-items: flex-start;
             }
 
-            .photo-thumb-main {
-                grid-column: span 1;
-                grid-row: span 1;
+            .horse-card-actions {
+                width: 100%;
             }
 
-            .video-grid {
-                grid-template-columns: 1fr;
+            .btn-detail,
+            .btn-inquire {
+                flex: 1;
+                padding: 12px 14px;
+                font-size: 11px;
             }
 
-            .health-grid {
-                grid-template-columns: 1fr;
+            .jockey-info {
+                padding: 16px;
+            }
+
+            .jockey-name-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 6px;
+            }
+
+            .jockey-name {
+                font-size: 18px;
+            }
+
+            .jockey-price {
+                text-align: left;
+                white-space: normal;
+            }
+
+            .jockey-stats-grid {
+                gap: 6px;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .jockey-detail-row {
+                gap: 12px;
+                flex-wrap: wrap;
+                align-items: flex-start;
+            }
+
+            .jockey-detail-val {
+                text-align: right;
+                max-width: 66%;
+            }
+
+            .jockey-bio {
+                font-size: 11px;
+            }
+
+            .jockey-card {
+                border-radius: 10px;
+            }
+
+            .bloodline-node,
+            .process-step,
+            .trust-item,
+            .contact-item,
+            .faq-item {
+                width: 100%;
+            }
+
+            .modal-overlay {
+                padding: 0;
+            }
+
+            .modal-container {
+                padding: 56px 16px 72px;
+            }
+
+            .modal-title {
+                font-size: 28px;
+                letter-spacing: 3px;
             }
 
             .modal-owner-info {
-                gap: 16px;
+                gap: 12px;
             }
 
             .modal-info-item {
                 flex-direction: column;
-                gap: 4px;
                 align-items: flex-start;
+                gap: 2px;
+            }
+
+            .modal-tabs {
+                overflow-x: auto;
+                white-space: nowrap;
+                padding-bottom: 6px;
+            }
+
+            .modal-tab {
+                padding: 12px 14px;
+                font-size: 11px;
+            }
+
+            .photo-gallery {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .video-grid,
+            .health-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .video-thumb-list {
+                max-height: none;
             }
 
             .download-btns {
@@ -1401,6 +1607,113 @@
             .bloodline-gen {
                 flex-direction: column;
                 align-items: center;
+            }
+
+            .vip-close {
+                top: 12px;
+                right: 12px;
+                width: 38px;
+                height: 38px;
+            }
+
+            .vip-container {
+                padding: 64px 16px 72px;
+            }
+
+            .vip-title {
+                font-size: 24px;
+                letter-spacing: 3px;
+            }
+
+            .vip-tabs {
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+
+            .vip-tab {
+                padding: 12px 18px;
+                font-size: 12px;
+            }
+
+            .fav-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .key-gen-row,
+            .key-form-grid,
+            .key-form-actions {
+                grid-template-columns: 1fr;
+                display: grid;
+            }
+
+            .key-list-header {
+                display: none;
+            }
+
+            .key-list-item {
+                grid-template-columns: 1fr;
+                gap: 10px;
+                align-items: flex-start;
+            }
+
+            .key-copy-btn,
+            .key-del-btn {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .hero h1 {
+                font-size: 34px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .photo-gallery {
+                grid-template-columns: 1fr;
+            }
+
+            .jockey-card {
+                max-width: 100%;
+            }
+
+            .jockey-img {
+                aspect-ratio: 16 / 20;
+            }
+
+            .jockey-stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .horse-card-actions {
+                flex-direction: column;
+            }
+
+            .btn-detail,
+            .btn-inquire {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .section-title,
+            .archive-text h2,
+            .value-title,
+            .inquiry-title {
+                font-size: 26px;
+            }
+
+            .featured,
+            .jockeys,
+            .bloodline,
+            .trust-section,
+            .contact-section,
+            .process-section,
+            .faq-section {
+                padding-left: 16px;
+                padding-right: 16px;
             }
         }
 
@@ -1457,6 +1770,18 @@
             color: var(--gray);
             letter-spacing: 4px;
             margin-bottom: 48px;
+        }
+
+        @media (max-width: 900px) {
+            .nav-mobile-toggle {
+                display: flex !important;
+            }
+            .nav-mobile-panel {
+                display: none;
+            }
+            .nav-mobile-panel.active {
+                display: block;
+            }
         }
 
         .invite-input {
@@ -1605,6 +1930,71 @@
         .nav-vip-btn:hover {
             background: rgba(201,169,110,0.25);
             border-color: var(--gold);
+        }
+
+        .nav-mobile-toggle {
+            display: none;
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 42px;
+            height: 42px;
+            border: 1px solid rgba(201,169,110,0.35);
+            background: rgba(201,169,110,0.08);
+            color: var(--gold);
+            font-size: 20px;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-mobile-panel {
+            display: none;
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 100%;
+            background: rgba(10,10,10,0.98);
+            border-top: 1px solid rgba(255,255,255,0.08);
+            padding: 16px 20px 20px;
+            box-shadow: 0 16px 30px rgba(0,0,0,0.35);
+        }
+
+        .nav-mobile-panel.active {
+            display: block;
+        }
+
+        .nav-mobile-links {
+            display: grid;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .nav-mobile-links a {
+            display: block;
+            color: var(--gray-light);
+            text-decoration: none;
+            font-size: 12px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .nav-mobile-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-mobile-actions .nav-vip-btn,
+        .nav-mobile-actions .nav-logout-btn {
+            position: static;
+            transform: none;
+            display: block;
+            flex: 1;
+            width: auto;
+            margin-left: 0;
         }
 
         .nav-logout-btn {
@@ -2909,6 +3299,24 @@
         }, 800);
     });
 
+    function toggleMobileNav(forceClose = false) {
+        const panel = document.getElementById('navMobilePanel');
+        const btn = document.getElementById('navMobileToggle');
+        if (!panel || !btn) return;
+        const open = forceClose ? false : !panel.classList.contains('active');
+        panel.classList.toggle('active', open);
+        btn.textContent = open ? '✕' : '☰';
+        btn.setAttribute('aria-label', open ? '关闭菜单' : '打开菜单');
+    }
+
+    document.addEventListener('click', e => {
+        const nav = document.getElementById('navbar');
+        const panel = document.getElementById('navMobilePanel');
+        const btn = document.getElementById('navMobileToggle');
+        if (!nav || !panel || !btn) return;
+        if (!nav.contains(e.target)) toggleMobileNav(true);
+    });
+
     // 合并滚动事件处理，优化性能
     let scrollRAF = null;
     window.addEventListener('scroll', () => {
@@ -3033,13 +3441,20 @@
 
     function showPlatformNav() {
         updateFavButtons();
+        const panel = document.getElementById('navMobilePanel');
+        if (panel) panel.classList.remove('active');
     }
 
     function logout() {
         localStorage.removeItem('invite_ok');
         localStorage.removeItem('is_admin');
+        toggleMobileNav(true);
         window.location.reload();
     }
+
+    document.querySelectorAll('.nav-mobile-links a').forEach(link => {
+        link.addEventListener('click', () => toggleMobileNav(true));
+    });
 
     // ========== 贵宾中心 ==========
 
@@ -3083,12 +3498,15 @@
     function toggleVideo(id) {
         const video = document.getElementById('video-' + id);
         const icon = document.getElementById('icon-' + id);
+        const media = video ? video.closest('.horse-card-media') : null;
         if (video.paused) {
-            video.play();
+            video.play().catch(() => {});
             icon.textContent = '❚❚';
+            if (media) media.classList.add('playing');
         } else {
             video.pause();
             icon.textContent = '▶';
+            if (media) media.classList.remove('playing');
         }
     }
 
@@ -3295,6 +3713,7 @@
         <div class="logo">
             盛世图腾
         </div>
+        <button class="nav-mobile-toggle" id="navMobileToggle" type="button" aria-label="打开菜单" onclick="toggleMobileNav()">☰</button>
         <ul class="nav-links">
             <li><a href="#featured">精选马匹</a></li>
             <li><a href="#jockeys">签约骑师</a></li>
@@ -3302,6 +3721,18 @@
             <li><a href="#about">关于我们</a></li>
         </ul>
         <button class="nav-vip-btn" onclick="openVipCenter()">贵宾中心</button>
+        <div class="nav-mobile-panel" id="navMobilePanel">
+            <div class="nav-mobile-links">
+                <a href="#featured">精选马匹</a>
+                <a href="#jockeys">签约骑师</a>
+                <a href="#bloodline">血统图谱</a>
+                <a href="#about">关于我们</a>
+            </div>
+            <div class="nav-mobile-actions">
+                <button class="nav-vip-btn" onclick="openVipCenter()">贵宾中心</button>
+                <button class="nav-logout-btn" onclick="logout()">退出</button>
+            </div>
+        </div>
     </nav>
 
     <!-- Hero -->
@@ -3359,7 +3790,8 @@
             <!-- 玉龙驹 -->
             <div class="horse-card fade-in" dataHorse="yulong">
                 <div class="horse-card-media">
-                    <video id="video-yulong" src="assets/玉龙驹.mp4" muted loop playsinline></video>
+                    <img class="horse-media-poster" src="assets/玉龙驹.jpg" alt="玉龙驹封面">
+                    <video id="video-yulong" src="assets/玉龙驹.mp4" muted loop playsinline poster="assets/玉龙驹.jpg"></video>
                     <span class="horse-card-status status-sale">待售</span>
                     <div class="play-btn-overlay" onclick="toggleVideo('yulong')"><span class="play-btn-icon" id="icon-yulong">▶</span></div>
                     <button class="fav-btn" id="fav-yulong" onclick="toggleFavorite('horse','yulong')">♡</button>
@@ -3395,7 +3827,8 @@
             <!-- 赤兔 -->
             <div class="horse-card fade-in" dataHorse="chitu">
                 <div class="horse-card-media">
-                    <video id="video-chitu" src="assets/赤兔.mp4" muted loop playsinline></video>
+                    <img class="horse-media-poster" src="assets/赤兔.jpg" alt="赤兔封面">
+                    <video id="video-chitu" src="assets/赤兔.mp4" muted loop playsinline poster="assets/赤兔.jpg"></video>
                     <span class="horse-card-status status-breeding">配种中</span>
                     <div class="play-btn-overlay" onclick="toggleVideo('chitu')"><span class="play-btn-icon" id="icon-chitu">▶</span></div>
                     <button class="fav-btn" id="fav-chitu" onclick="toggleFavorite('horse','chitu')">♡</button>
@@ -3431,7 +3864,8 @@
             <!-- 将军 -->
             <div class="horse-card fade-in" dataHorse="jiangjun">
                 <div class="horse-card-media">
-                    <video id="video-jiangjun" src="assets/将军.mp4" muted loop playsinline></video>
+                    <img class="horse-media-poster" src="assets/将军.jpg" alt="将军封面">
+                    <video id="video-jiangjun" src="assets/将军.mp4" muted loop playsinline poster="assets/将军.jpg"></video>
                     <span class="horse-card-status status-owned">有主</span>
                     <div class="play-btn-overlay" onclick="toggleVideo('jiangjun')"><span class="play-btn-icon" id="icon-jiangjun">▶</span></div>
                     <button class="fav-btn" id="fav-jiangjun" onclick="toggleFavorite('horse','jiangjun')">♡</button>
@@ -3467,7 +3901,8 @@
             <!-- 烈焰 -->
             <div class="horse-card fade-in" dataHorse="lieyan">
                 <div class="horse-card-media">
-                    <video id="video-lieyan" src="assets/烈焰.mp4" muted loop playsinline></video>
+                    <img class="horse-media-poster" src="assets/烈焰.jpg" alt="烈焰封面">
+                    <video id="video-lieyan" src="assets/烈焰.mp4" muted loop playsinline poster="assets/烈焰.jpg"></video>
                     <span class="horse-card-status status-breeding">配种中</span>
                     <div class="play-btn-overlay" onclick="toggleVideo('lieyan')"><span class="play-btn-icon" id="icon-lieyan">▶</span></div>
                     <button class="fav-btn" id="fav-lieyan" onclick="toggleFavorite('horse','lieyan')">♡</button>
@@ -3503,7 +3938,8 @@
             <!-- 汉白玉 -->
             <div class="horse-card fade-in" dataHorse="hanbaiyu">
                 <div class="horse-card-media">
-                    <video id="video-hanbaiyu" src="assets/汉白玉.mp4" muted loop playsinline></video>
+                    <img class="horse-media-poster" src="assets/汉白玉.jpg" alt="汉白玉封面">
+                    <video id="video-hanbaiyu" src="assets/汉白玉.mp4" muted loop playsinline poster="assets/汉白玉.jpg"></video>
                     <span class="horse-card-status status-owned">有主</span>
                     <div class="play-btn-overlay" onclick="toggleVideo('hanbaiyu')"><span class="play-btn-icon" id="icon-hanbaiyu">▶</span></div>
                     <button class="fav-btn" id="fav-hanbaiyu" onclick="toggleFavorite('horse','hanbaiyu')">♡</button>
@@ -3539,7 +3975,8 @@
             <!-- 黑风 -->
             <div class="horse-card fade-in" dataHorse="heifeng">
                 <div class="horse-card-media">
-                    <video id="video-heifeng" src="assets/黑风.mp4" muted loop playsinline></video>
+                    <img class="horse-media-poster" src="assets/黑风.jpg" alt="黑风封面">
+                    <video id="video-heifeng" src="assets/黑风.mp4" muted loop playsinline poster="assets/黑风.jpg"></video>
                     <span class="horse-card-status status-sale">待售</span>
                     <div class="play-btn-overlay" onclick="toggleVideo('heifeng')"><span class="play-btn-icon" id="icon-heifeng">▶</span></div>
                     <button class="fav-btn" id="fav-heifeng" onclick="toggleFavorite('horse','heifeng')">♡</button>
@@ -3590,9 +4027,10 @@
                     <button class="fav-btn" id="fav-suqin" onclick="toggleFavorite('jockey','suqing')">♡</button>
                 </div>
                 <div class="jockey-info">
-                    <h3 class="jockey-name">苏晴
+                    <div class="jockey-name-row">
+                        <h3 class="jockey-name">苏晴</h3>
                         <div class="jockey-price">¥1500/时<span>¥5000/天</span></div>
-                    </h3>
+                    </div>
                     <div class="jockey-club">长春盛世图腾马术俱乐部</div>
                     <div class="jockey-stats-grid">
                         <div class="jockey-stat"><div class="jockey-stat-val">312</div><div class="jockey-stat-lbl">参赛场次</div></div>
@@ -3617,9 +4055,10 @@
                     <button class="fav-btn" id="fav-chenyuwei" onclick="toggleFavorite('jockey','chenyuwei')">♡</button>
                 </div>
                 <div class="jockey-info">
-                    <h3 class="jockey-name">陈雨薇
+                    <div class="jockey-name-row">
+                        <h3 class="jockey-name">陈雨薇</h3>
                         <div class="jockey-price">¥1500/时<span>¥5000/天</span></div>
-                    </h3>
+                    </div>
                     <div class="jockey-club">杭州钱塘马术学院</div>
                     <div class="jockey-stats-grid">
                         <div class="jockey-stat"><div class="jockey-stat-val">198</div><div class="jockey-stat-lbl">参赛场次</div></div>
@@ -3644,9 +4083,10 @@
                     <button class="fav-btn" id="fav-linmengting" onclick="toggleFavorite('jockey','linmengting')">♡</button>
                 </div>
                 <div class="jockey-info">
-                    <h3 class="jockey-name">林梦婷
+                    <div class="jockey-name-row">
+                        <h3 class="jockey-name">林梦婷</h3>
                         <div class="jockey-price">¥1500/时<span>¥5000/天</span></div>
-                    </h3>
+                    </div>
                     <div class="jockey-club">上海外滩马术中心</div>
                     <div class="jockey-stats-grid">
                         <div class="jockey-stat"><div class="jockey-stat-val">421</div><div class="jockey-stat-lbl">参赛场次</div></div>
@@ -3671,9 +4111,10 @@
                     <button class="fav-btn" id="fav-zhaozilong" onclick="toggleFavorite('jockey','zhaozilong')">♡</button>
                 </div>
                 <div class="jockey-info">
-                    <h3 class="jockey-name">赵子龙
+                    <div class="jockey-name-row">
+                        <h3 class="jockey-name">赵子龙</h3>
                         <div class="jockey-price">¥1500/时<span>¥5000/天</span></div>
-                    </h3>
+                    </div>
                     <div class="jockey-club">北京京华马术俱乐部</div>
                     <div class="jockey-stats-grid">
                         <div class="jockey-stat"><div class="jockey-stat-val">567</div><div class="jockey-stat-lbl">参赛场次</div></div>
@@ -4035,7 +4476,7 @@
                     weightTrend: '稳定',
                     nextCheck: '2026-04-20'
                 },
-                photos: ['assets/玉龙驹.mp4','assets/玉龙驹.mp4','assets/玉龙驹.mp4','assets/玉龙驹.mp4','assets/玉龙驹.mp4','assets/玉龙驹.mp4','assets/玉龙驹.mp4','assets/玉龙驹.mp4','assets/玉龙驹.mp4','assets/玉龙驹.mp4'],
+                photos: ['assets/玉龙驹.jpg'],
                 videos: [
                     {label: '行走姿态', src: 'assets/玉龙驹.mp4'},
                     {label: '奔跑展示', src: 'assets/玉龙驹.mp4'},
@@ -4079,7 +4520,7 @@
                     weightTrend: '略有上升',
                     nextCheck: '2026-04-15'
                 },
-                photos: ['assets/赤兔.mp4','assets/赤兔.mp4','assets/赤兔.mp4','assets/赤兔.mp4','assets/赤兔.mp4','assets/赤兔.mp4','assets/赤兔.mp4','assets/赤兔.mp4','assets/赤兔.mp4','assets/赤兔.mp4'],
+                photos: ['assets/赤兔.jpg'],
                 videos: [
                     {label: '行走姿态', src: 'assets/赤兔.mp4'},
                     {label: '奔跑展示', src: 'assets/赤兔.mp4'},
@@ -4123,7 +4564,7 @@
                     weightTrend: '稳定',
                     nextCheck: '2026-05-01'
                 },
-                photos: ['assets/将军.mp4','assets/将军.mp4','assets/将军.mp4','assets/将军.mp4','assets/将军.mp4','assets/将军.mp4','assets/将军.mp4','assets/将军.mp4','assets/将军.mp4','assets/将军.mp4'],
+                photos: ['assets/将军.jpg'],
                 videos: [
                     {label: '行走姿态', src: 'assets/将军.mp4'},
                     {label: '奔跑展示', src: 'assets/将军.mp4'},
@@ -4168,7 +4609,7 @@
                     weightTrend: '稳定',
                     nextCheck: '2026-04-25'
                 },
-                photos: ['assets/烈焰.mp4','assets/烈焰.mp4','assets/烈焰.mp4','assets/烈焰.mp4','assets/烈焰.mp4','assets/烈焰.mp4','assets/烈焰.mp4','assets/烈焰.mp4','assets/烈焰.mp4','assets/烈焰.mp4'],
+                photos: ['assets/烈焰.jpg'],
                 videos: [
                     {label: '行走姿态', src: 'assets/烈焰.mp4'},
                     {label: '奔跑展示', src: 'assets/烈焰.mp4'},
@@ -4213,7 +4654,7 @@
                     weightTrend: '略有上升',
                     nextCheck: '2026-05-10'
                 },
-                photos: ['assets/汉白玉.mp4','assets/汉白玉.mp4','assets/汉白玉.mp4','assets/汉白玉.mp4','assets/汉白玉.mp4','assets/汉白玉.mp4','assets/汉白玉.mp4','assets/汉白玉.mp4','assets/汉白玉.mp4','assets/汉白玉.mp4'],
+                photos: ['assets/汉白玉.jpg'],
                 videos: [
                     {label: '行走姿态', src: 'assets/汉白玉.mp4'},
                     {label: '奔跑展示', src: 'assets/汉白玉.mp4'},
@@ -4256,7 +4697,7 @@
                     weightTrend: '稳定',
                     nextCheck: '2026-04-30'
                 },
-                photos: ['assets/黑风.mp4','assets/黑风.mp4','assets/黑风.mp4','assets/黑风.mp4','assets/黑风.mp4','assets/黑风.mp4','assets/黑风.mp4','assets/黑风.mp4','assets/黑风.mp4','assets/黑风.mp4'],
+                photos: ['assets/黑风.jpg'],
                 videos: [
                     {label: '行走姿态', src: 'assets/黑风.mp4'},
                     {label: '奔跑展示', src: 'assets/黑风.mp4'},
@@ -4646,6 +5087,13 @@
         if (typeof statsObserver !== 'undefined') {
             document.querySelectorAll('.stats').forEach(el => statsObserver.observe(el));
         }
+
+        document.querySelectorAll('.horse-card-media video').forEach(video => {
+            const media = video.closest('.horse-card-media');
+            if (!media) return;
+            video.addEventListener('play', () => media.classList.add('playing'));
+            video.addEventListener('pause', () => media.classList.remove('playing'));
+        });
     </script>
 
     <!-- 详细资料弹窗 -->
