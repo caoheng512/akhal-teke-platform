@@ -84,6 +84,7 @@
         .page-loader.hidden {
             opacity: 0;
             visibility: hidden;
+            pointer-events: none;
         }
 
         .page-loader-logo {
@@ -3295,12 +3296,21 @@
     // 邀请密钥（可修改）
     const INVITE_KEY = 'SST2026';
 
-    // 页面加载完成后隐藏加载器
-    window.addEventListener('load', () => {
-        setTimeout(() => {
-            document.getElementById('pageLoader').classList.add('hidden');
-        }, 800);
-    });
+    // 页面加载器：不要只依赖 load，移动端内置浏览器偶尔会拖住它
+    function hidePageLoader() {
+        const loader = document.getElementById('pageLoader');
+        if (loader) {
+            loader.classList.add('hidden');
+            loader.style.display = 'none';
+        }
+    }
+    function scheduleHidePageLoader(delay = 180) {
+        setTimeout(hidePageLoader, delay);
+    }
+    document.addEventListener('DOMContentLoaded', () => scheduleHidePageLoader(120), { once: true });
+    window.addEventListener('load', () => scheduleHidePageLoader(0), { once: true });
+    window.addEventListener('pageshow', () => scheduleHidePageLoader(120));
+    setTimeout(hidePageLoader, 2500);
 
     function toggleMobileNav(forceClose = false) {
         const panel = document.getElementById('navMobilePanel');
@@ -3443,7 +3453,7 @@
     }
 
     function showPlatformNav() {
-        updateFavButtons();
+        if (typeof updateFavButtons === 'function') updateFavButtons();
         const panel = document.getElementById('navMobilePanel');
         if (panel) panel.classList.remove('active');
     }
