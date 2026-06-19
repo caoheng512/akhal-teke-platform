@@ -724,7 +724,7 @@
 
     <!-- Hero 区域 -->
     <section class="yulong-hero">
-        <video src="assets/玉龙驹.mp4" autoplay muted loop playsinline></video>
+        <video src="assets/玉龙驹-web.mp4" autoplay muted loop playsinline preload="metadata" poster="assets/玉龙驹.jpg"></video>
         <div class="yulong-hero-content">
             <div class="yulong-badge">AKHAL-TEKE · 芯片号 SST-AK-2021-001</div>
             <h1 class="yulong-title">玉龙驹</h1>
@@ -883,19 +883,19 @@
         </div>
         <div class="gallery-grid">
             <div class="gallery-item">
-                <video src="assets/玉龙驹.mp4" muted loop playsinline controls></video>
+                <video src="assets/玉龙驹-web.mp4" muted loop playsinline controls preload="none" poster="assets/玉龙驹.jpg"></video>
                 <div class="gallery-label">行走姿态</div>
             </div>
             <div class="gallery-item">
-                <video src="assets/玉龙驹.mp4" muted loop playsinline controls></video>
+                <video src="assets/玉龙驹-web.mp4" muted loop playsinline controls preload="none" poster="assets/玉龙驹.jpg"></video>
                 <div class="gallery-label">奔跑展示</div>
             </div>
             <div class="gallery-item">
-                <video src="assets/玉龙驹.mp4" muted loop playsinline controls></video>
+                <video src="assets/玉龙驹-web.mp4" muted loop playsinline controls preload="none" poster="assets/玉龙驹.jpg"></video>
                 <div class="gallery-label">日常喂养</div>
             </div>
             <div class="gallery-item">
-                <video src="assets/玉龙驹.mp4" muted loop playsinline controls></video>
+                <video src="assets/玉龙驹-web.mp4" muted loop playsinline controls preload="none" poster="assets/玉龙驹.jpg"></video>
                 <div class="gallery-label">马厩环境</div>
             </div>
         </div>
@@ -1007,6 +1007,12 @@
         // ESC关闭弹窗
         document.addEventListener('keydown', e => {
             if (e.key === 'Escape') closeYulongInquiry();
+        });
+
+        Object.assign(window, {
+            openYulongInquiry,
+            closeYulongInquiry,
+            submitYulongInquiry
         });
     </script>
 </body>

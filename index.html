@@ -673,6 +673,7 @@
             padding: 3px 8px;
             letter-spacing: 1px;
             font-family: 'Helvetica Neue', 'Arial', sans-serif;
+            cursor: default;
         }
 
         .horse-card-status-row {
@@ -2614,6 +2615,7 @@
             background: rgba(0,0,0,0.92);
             z-index: 2000;
             overflow-y: auto;
+            cursor: pointer;
         }
 
         .modal-overlay.active {
@@ -3002,7 +3004,8 @@
             background: rgba(201,169,110,0.05);
         }
 
-        .video-thumb-item video {
+        .video-thumb-item video,
+        .video-thumb-poster {
             width: 80px;
             aspect-ratio: 16/9;
             object-fit: cover;
@@ -3499,10 +3502,22 @@
         const video = document.getElementById('video-' + id);
         const icon = document.getElementById('icon-' + id);
         const media = video ? video.closest('.horse-card-media') : null;
+        if (video && !video.src && video.dataset.src) {
+            video.src = video.dataset.src;
+            video.load();
+        }
         if (video.paused) {
-            video.play().catch(() => {});
-            icon.textContent = '❚❚';
-            if (media) media.classList.add('playing');
+            const playAttempt = video.play();
+            if (playAttempt && typeof playAttempt.then === 'function') {
+                playAttempt.then(() => {
+                    icon.textContent = '❚❚';
+                }).catch(() => {
+                    icon.textContent = '▶';
+                    if (media) media.classList.remove('playing');
+                });
+            } else {
+                icon.textContent = '❚❚';
+            }
         } else {
             video.pause();
             icon.textContent = '▶';
@@ -3791,9 +3806,9 @@
             <div class="horse-card fade-in" dataHorse="yulong">
                 <div class="horse-card-media">
                     <img class="horse-media-poster" src="assets/玉龙驹.jpg" alt="玉龙驹封面">
-                    <video id="video-yulong" src="assets/玉龙驹.mp4" muted loop playsinline poster="assets/玉龙驹.jpg"></video>
+                    <video id="video-yulong" onerror="this.closest('.horse-card-media').classList.remove('playing')" data-src="assets/玉龙驹-web.mp4" preload="none" muted loop playsinline poster="assets/玉龙驹.jpg"></video>
                     <span class="horse-card-status status-sale">待售</span>
-                    <div class="play-btn-overlay" onclick="toggleVideo('yulong')"><span class="play-btn-icon" id="icon-yulong">▶</span></div>
+                    <div class="play-btn-overlay" data-video-toggle="yulong" onclick=""><span class="play-btn-icon" id="icon-yulong">▶</span></div>
                     <button class="fav-btn" id="fav-yulong" onclick="toggleFavorite('horse','yulong')">♡</button>
                 </div>
                 <div class="horse-card-info">
@@ -3828,9 +3843,9 @@
             <div class="horse-card fade-in" dataHorse="chitu">
                 <div class="horse-card-media">
                     <img class="horse-media-poster" src="assets/赤兔.jpg" alt="赤兔封面">
-                    <video id="video-chitu" src="assets/赤兔.mp4" muted loop playsinline poster="assets/赤兔.jpg"></video>
+                    <video id="video-chitu" onerror="this.closest('.horse-card-media').classList.remove('playing')" data-src="assets/赤兔-web.mp4" preload="none" muted loop playsinline poster="assets/赤兔.jpg"></video>
                     <span class="horse-card-status status-breeding">配种中</span>
-                    <div class="play-btn-overlay" onclick="toggleVideo('chitu')"><span class="play-btn-icon" id="icon-chitu">▶</span></div>
+                    <div class="play-btn-overlay" data-video-toggle="chitu" onclick=""><span class="play-btn-icon" id="icon-chitu">▶</span></div>
                     <button class="fav-btn" id="fav-chitu" onclick="toggleFavorite('horse','chitu')">♡</button>
                 </div>
                 <div class="horse-card-info">
@@ -3865,9 +3880,9 @@
             <div class="horse-card fade-in" dataHorse="jiangjun">
                 <div class="horse-card-media">
                     <img class="horse-media-poster" src="assets/将军.jpg" alt="将军封面">
-                    <video id="video-jiangjun" src="assets/将军.mp4" muted loop playsinline poster="assets/将军.jpg"></video>
+                    <video id="video-jiangjun" onerror="this.closest('.horse-card-media').classList.remove('playing')" data-src="assets/将军-web.mp4" preload="none" muted loop playsinline poster="assets/将军.jpg"></video>
                     <span class="horse-card-status status-owned">有主</span>
-                    <div class="play-btn-overlay" onclick="toggleVideo('jiangjun')"><span class="play-btn-icon" id="icon-jiangjun">▶</span></div>
+                    <div class="play-btn-overlay" data-video-toggle="jiangjun" onclick=""><span class="play-btn-icon" id="icon-jiangjun">▶</span></div>
                     <button class="fav-btn" id="fav-jiangjun" onclick="toggleFavorite('horse','jiangjun')">♡</button>
                 </div>
                 <div class="horse-card-info">
@@ -3902,9 +3917,9 @@
             <div class="horse-card fade-in" dataHorse="lieyan">
                 <div class="horse-card-media">
                     <img class="horse-media-poster" src="assets/烈焰.jpg" alt="烈焰封面">
-                    <video id="video-lieyan" src="assets/烈焰.mp4" muted loop playsinline poster="assets/烈焰.jpg"></video>
+                    <video id="video-lieyan" onerror="this.closest('.horse-card-media').classList.remove('playing')" data-src="assets/烈焰-web.mp4" preload="none" muted loop playsinline poster="assets/烈焰.jpg"></video>
                     <span class="horse-card-status status-breeding">配种中</span>
-                    <div class="play-btn-overlay" onclick="toggleVideo('lieyan')"><span class="play-btn-icon" id="icon-lieyan">▶</span></div>
+                    <div class="play-btn-overlay" data-video-toggle="lieyan" onclick=""><span class="play-btn-icon" id="icon-lieyan">▶</span></div>
                     <button class="fav-btn" id="fav-lieyan" onclick="toggleFavorite('horse','lieyan')">♡</button>
                 </div>
                 <div class="horse-card-info">
@@ -3939,9 +3954,9 @@
             <div class="horse-card fade-in" dataHorse="hanbaiyu">
                 <div class="horse-card-media">
                     <img class="horse-media-poster" src="assets/汉白玉.jpg" alt="汉白玉封面">
-                    <video id="video-hanbaiyu" src="assets/汉白玉.mp4" muted loop playsinline poster="assets/汉白玉.jpg"></video>
+                    <video id="video-hanbaiyu" onerror="this.closest('.horse-card-media').classList.remove('playing')" data-src="assets/汉白玉-web.mp4" preload="none" muted loop playsinline poster="assets/汉白玉.jpg"></video>
                     <span class="horse-card-status status-owned">有主</span>
-                    <div class="play-btn-overlay" onclick="toggleVideo('hanbaiyu')"><span class="play-btn-icon" id="icon-hanbaiyu">▶</span></div>
+                    <div class="play-btn-overlay" data-video-toggle="hanbaiyu" onclick=""><span class="play-btn-icon" id="icon-hanbaiyu">▶</span></div>
                     <button class="fav-btn" id="fav-hanbaiyu" onclick="toggleFavorite('horse','hanbaiyu')">♡</button>
                 </div>
                 <div class="horse-card-info">
@@ -3976,9 +3991,9 @@
             <div class="horse-card fade-in" dataHorse="heifeng">
                 <div class="horse-card-media">
                     <img class="horse-media-poster" src="assets/黑风.jpg" alt="黑风封面">
-                    <video id="video-heifeng" src="assets/黑风.mp4" muted loop playsinline poster="assets/黑风.jpg"></video>
+                    <video id="video-heifeng" onerror="this.closest('.horse-card-media').classList.remove('playing')" data-src="assets/黑风-web.mp4" preload="none" muted loop playsinline poster="assets/黑风.jpg"></video>
                     <span class="horse-card-status status-sale">待售</span>
-                    <div class="play-btn-overlay" onclick="toggleVideo('heifeng')"><span class="play-btn-icon" id="icon-heifeng">▶</span></div>
+                    <div class="play-btn-overlay" data-video-toggle="heifeng" onclick=""><span class="play-btn-icon" id="icon-heifeng">▶</span></div>
                     <button class="fav-btn" id="fav-heifeng" onclick="toggleFavorite('horse','heifeng')">♡</button>
                 </div>
                 <div class="horse-card-info">
@@ -4478,9 +4493,9 @@
                 },
                 photos: ['assets/玉龙驹.jpg'],
                 videos: [
-                    {label: '行走姿态', src: 'assets/玉龙驹.mp4'},
-                    {label: '奔跑展示', src: 'assets/玉龙驹.mp4'},
-                    {label: '日常喂养', src: 'assets/玉龙驹.mp4'}
+                    {label: '行走姿态', src: 'assets/玉龙驹-web.mp4'},
+                    {label: '奔跑展示', src: 'assets/玉龙驹-web.mp4'},
+                    {label: '日常喂养', src: 'assets/玉龙驹-web.mp4'}
                 ],
                 bloodline: {
                     father: {name: '父亲', title: '2018土库曼国家冠军', chip: 'SST-AK-2015-001'},
@@ -4522,9 +4537,9 @@
                 },
                 photos: ['assets/赤兔.jpg'],
                 videos: [
-                    {label: '行走姿态', src: 'assets/赤兔.mp4'},
-                    {label: '奔跑展示', src: 'assets/赤兔.mp4'},
-                    {label: '日常喂养', src: 'assets/赤兔.mp4'}
+                    {label: '行走姿态', src: 'assets/赤兔-web.mp4'},
+                    {label: '奔跑展示', src: 'assets/赤兔-web.mp4'},
+                    {label: '日常喂养', src: 'assets/赤兔-web.mp4'}
                 ],
                 bloodline: {
                     father: {name: '父亲', title: '2012国际赛冠军', chip: 'SST-AK-2009-002'},
@@ -4566,9 +4581,9 @@
                 },
                 photos: ['assets/将军.jpg'],
                 videos: [
-                    {label: '行走姿态', src: 'assets/将军.mp4'},
-                    {label: '奔跑展示', src: 'assets/将军.mp4'},
-                    {label: '日常训练', src: 'assets/将军.mp4'}
+                    {label: '行走姿态', src: 'assets/将军-web.mp4'},
+                    {label: '奔跑展示', src: 'assets/将军-web.mp4'},
+                    {label: '日常训练', src: 'assets/将军-web.mp4'}
                 ],
                 bloodline: {
                     father: {name: '父亲', title: '2010世界冠军', chip: 'SST-AK-2007-003'},
@@ -4611,9 +4626,9 @@
                 },
                 photos: ['assets/烈焰.jpg'],
                 videos: [
-                    {label: '行走姿态', src: 'assets/烈焰.mp4'},
-                    {label: '奔跑展示', src: 'assets/烈焰.mp4'},
-                    {label: '日常喂养', src: 'assets/烈焰.mp4'}
+                    {label: '行走姿态', src: 'assets/烈焰-web.mp4'},
+                    {label: '奔跑展示', src: 'assets/烈焰-web.mp4'},
+                    {label: '日常喂养', src: 'assets/烈焰-web.mp4'}
                 ],
                 bloodline: {
                     father: {name: '父亲', title: '2016国家冠军', chip: 'SST-AK-2013-004'},
@@ -4656,9 +4671,9 @@
                 },
                 photos: ['assets/汉白玉.jpg'],
                 videos: [
-                    {label: '行走姿态', src: 'assets/汉白玉.mp4'},
-                    {label: '奔跑展示', src: 'assets/汉白玉.mp4'},
-                    {label: '日常训练', src: 'assets/汉白玉.mp4'}
+                    {label: '行走姿态', src: 'assets/汉白玉-web.mp4'},
+                    {label: '奔跑展示', src: 'assets/汉白玉-web.mp4'},
+                    {label: '日常训练', src: 'assets/汉白玉-web.mp4'}
                 ],
                 bloodline: {
                     father: {name: '父亲', title: '2017世界冠军', chip: 'SST-AK-2014-005'},
@@ -4699,9 +4714,9 @@
                 },
                 photos: ['assets/黑风.jpg'],
                 videos: [
-                    {label: '行走姿态', src: 'assets/黑风.mp4'},
-                    {label: '奔跑展示', src: 'assets/黑风.mp4'},
-                    {label: '日常训练', src: 'assets/黑风.mp4'}
+                    {label: '行走姿态', src: 'assets/黑风-web.mp4'},
+                    {label: '奔跑展示', src: 'assets/黑风-web.mp4'},
+                    {label: '日常训练', src: 'assets/黑风-web.mp4'}
                 ],
                 bloodline: {
                     father: {name: '父亲', title: '2010国际赛冠军', chip: 'SST-AK-2007-006'},
@@ -4794,12 +4809,13 @@
             });
 
             let videosHtml = '';
+            const videoPoster = d.photos[0] || '';
             d.videos.forEach((v, i) => {
                 const active = i === 0 ? 'active' : '';
-                videosHtml += `<div class="video-thumb-item ${active}" onclick="switchVideo(this, '${v.src}', '${v.label}', '${id}')"><video src="${v.src}" muted preload="metadata"></video><span class="video-thumb-label">${v.label}</span></div>`;
+                videosHtml += `<div class="video-thumb-item ${active}" onclick="switchVideo(this, '${v.src}', '${v.label}', '${id}')"><img src="${videoPoster}" alt="${v.label}" class="video-thumb-poster" loading="lazy"><span class="video-thumb-label">${v.label}</span></div>`;
             });
             let featuredVideo = d.videos[0] ? d.videos[0] : d.videos;
-            let mainVideosHtml = `<div class="video-featured"><video id="mainVideo-${id}" src="${featuredVideo.src}" controls preload="metadata"></video><div class="video-featured-label">${featuredVideo.label}</div></div>`;
+            let mainVideosHtml = `<div class="video-featured"><video id="mainVideo-${id}" src="${featuredVideo.src}" controls preload="metadata" playsinline poster="${videoPoster}"></video><div class="video-featured-label">${featuredVideo.label}</div></div>`;
 
             let transactionsHtml = '';
             d.transactions.forEach(t => {
@@ -5070,7 +5086,7 @@
             if (mainVideo) {
                 mainVideo.src = src;
                 mainVideo.load();
-                mainVideo.play();
+                mainVideo.play().catch(() => {});
             }
             if (mainLabel) mainLabel.textContent = label;
             document.querySelectorAll('.video-thumb-item').forEach(t => t.classList.remove('active'));
@@ -5091,8 +5107,44 @@
         document.querySelectorAll('.horse-card-media video').forEach(video => {
             const media = video.closest('.horse-card-media');
             if (!media) return;
-            video.addEventListener('play', () => media.classList.add('playing'));
+            video.addEventListener('playing', () => {
+                media.classList.add('playing');
+                const icon = media.querySelector('.play-btn-icon');
+                if (icon) icon.textContent = '❚❚';
+            });
             video.addEventListener('pause', () => media.classList.remove('playing'));
+            video.addEventListener('error', () => {
+                media.classList.remove('playing');
+                const icon = media.querySelector('.play-btn-icon');
+                if (icon) icon.textContent = '▶';
+            });
+        });
+
+        document.querySelectorAll('[data-video-toggle]').forEach(btn => {
+            btn.addEventListener('click', event => {
+                event.preventDefault();
+                event.stopPropagation();
+                toggleVideo(btn.dataset.videoToggle);
+            });
+        });
+
+        Object.assign(window, {
+            toggleMobileNav,
+            checkInvite,
+            showPlatformNav,
+            logout,
+            openVipCenter,
+            closeVipCenter,
+            switchVipTab,
+            toggleVideo,
+            toggleFavorite,
+            openDetail,
+            closeDetail,
+            openInquiry,
+            submitInquiry,
+            showOwnerStory,
+            switchTab,
+            switchVideo
         });
     </script>
 
